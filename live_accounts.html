@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Live Accounts — TraderX</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #090c10;
+      --surface: #0f141a;
+      --card: #141b24;
+      --border: #1e2a38;
+      --accent: #00e5a0;
+      --accent2: #f7b731;
+      --danger: #ff4757;
+      --text: #e8edf3;
+      --muted: #5a6a7e;
+      --mono: 'Space Mono', monospace;
+      --display: 'Bebas Neue', sans-serif;
+      --body: 'DM Sans', sans-serif;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--bg); color: var(--text);
+      font-family: var(--body); min-height: 100vh; overflow-x: hidden;
+    }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image: linear-gradient(rgba(0,229,160,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,229,160,0.03) 1px, transparent 1px);
+      background-size: 40px 40px; pointer-events: none; z-index: 0;
+    }
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(9,12,16,0.85); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem; height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .logo { font-family: var(--display); font-size: 1.6rem; letter-spacing: 3px; color: var(--accent); text-decoration: none; }
+    .logo span { color: var(--text); }
+    nav { display: flex; gap: 0.25rem; }
+    nav a {
+      color: var(--muted); text-decoration: none; font-family: var(--mono);
+      font-size: 0.7rem; letter-spacing: 1px; padding: 0.4rem 0.8rem;
+      border-radius: 4px; transition: all 0.2s; text-transform: uppercase;
+    }
+    nav a:hover, nav a.active { color: var(--accent); background: rgba(0,229,160,0.08); }
+    nav a.active { border: 1px solid rgba(0,229,160,0.3); }
+    main { position: relative; z-index: 1; max-width: 1100px; margin: 0 auto; padding: 3rem 2rem 5rem; }
+
+    .page-title {
+      font-family: var(--display); font-size: clamp(2.5rem, 6vw, 4rem);
+      letter-spacing: 4px; margin-bottom: 0.5rem; animation: fadeUp 0.6s ease both;
+    }
+    .page-title span { color: var(--accent); }
+    .page-sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 3rem; animation: fadeUp 0.6s ease 0.1s both; }
+
+    .section-label {
+      font-family: var(--mono); font-size: 0.65rem; letter-spacing: 3px; color: var(--muted);
+      text-transform: uppercase; margin-bottom: 1.5rem;
+      display: flex; align-items: center; gap: 0.75rem;
+    }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* Big stats */
+    .account-hero {
+      background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+      padding: 2rem; margin-bottom: 2rem; position: relative; overflow: hidden;
+      animation: fadeUp 0.6s ease 0.15s both;
+    }
+    .account-hero::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+    .account-hero-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;
+      flex-wrap: wrap; gap: 1rem;
+    }
+    .account-name { font-family: var(--display); font-size: 1.8rem; letter-spacing: 3px; }
+    .account-badge {
+      font-family: var(--mono); font-size: 0.65rem; padding: 0.4rem 0.9rem;
+      border-radius: 4px; letter-spacing: 1px; color: var(--accent);
+      background: rgba(0,229,160,0.1); border: 1px solid rgba(0,229,160,0.3);
+    }
+    .big-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 1rem; margin-bottom: 1.5rem; }
+    .big-stat { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; }
+    .big-stat-label { font-family: var(--mono); font-size: 0.6rem; color: var(--muted); letter-spacing: 1px; margin-bottom: 0.4rem; }
+    .big-stat-val { font-family: var(--mono); font-size: 1.3rem; font-weight: 700; }
+    .big-stat-val.green { color: var(--accent); }
+    .big-stat-val.red { color: var(--danger); }
+    .big-stat-val.neutral { color: var(--text); }
+
+    /* Progress bar */
+    .prog-wrap { margin-bottom: 0.5rem; }
+    .prog-meta { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 0.68rem; color: var(--muted); margin-bottom: 0.5rem; }
+    .prog-bar { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+    .prog-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg, var(--accent), #00b07a); position: relative; transition: width 1s ease; }
+    .prog-fill::after { content: ''; position: absolute; top:0; right:0; width:20px; height:100%; background:rgba(255,255,255,0.3); filter:blur(4px); animation:shimmer 2s ease-in-out infinite; }
+    @keyframes shimmer { 0%,100%{opacity:0} 50%{opacity:1} }
+
+    /* Days tracker */
+    .days-tracker { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1rem; }
+    .day-pill {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      width: 48px; height: 56px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+      font-family: var(--mono); font-size: 0.55rem; color: var(--muted); gap: 2px;
+      transition: all 0.2s;
+    }
+    .day-pill.done { border-color: rgba(0,229,160,0.4); background: rgba(0,229,160,0.05); color: var(--accent); }
+    .day-pill .d-icon { font-size: 1rem; }
+
+    /* Trade log table */
+    .trade-table { width: 100%; border-collapse: collapse; margin-top: 0.5rem; }
+    .trade-table th {
+      text-align: left; font-family: var(--mono); font-size: 0.6rem; letter-spacing: 1px;
+      color: var(--muted); padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border);
+    }
+    .trade-table td {
+      padding: 0.75rem; font-family: var(--mono); font-size: 0.75rem;
+      border-bottom: 1px solid rgba(30,42,56,0.5);
+      transition: background 0.15s;
+    }
+    .trade-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .trade-table td.profit { color: var(--accent); }
+    .trade-table td.loss { color: var(--danger); }
+    .trade-table td.pair { color: var(--text); font-weight: 700; }
+    .badge-buy { color: var(--accent); font-size: 0.6rem; background: rgba(0,229,160,0.1); padding: 0.15rem 0.4rem; border-radius: 3px; }
+    .badge-sell { color: var(--danger); font-size: 0.6rem; background: rgba(255,71,87,0.1); padding: 0.15rem 0.4rem; border-radius: 3px; }
+
+    .table-wrap { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; overflow-x: auto; }
+
+    /* Edit panel */
+    .edit-fab {
+      position: fixed; bottom: 2rem; right: 2rem; z-index: 50;
+      display: none; /* hidden — triple click logo to reveal */
+    }
+
+    footer { position: relative; z-index: 1; text-align: center; padding: 2rem; border-top: 1px solid var(--border); font-family: var(--mono); font-size: 0.65rem; color: var(--muted); letter-spacing: 1px; }
+
+    @keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+
+    /* Modal */
+    .modal { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:200; align-items:center; justify-content:center; }
+    .modal.open { display:flex; }
+    .modal-box { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:2rem; width:90%; max-width:520px; max-height:90vh; overflow-y:auto; }
+    .modal-title { font-family:var(--display); font-size:1.4rem; letter-spacing:2px; margin-bottom:1.5rem; color:var(--accent); }
+    .form-group { margin-bottom:1rem; }
+    .form-label { font-family:var(--mono); font-size:0.6rem; color:var(--muted); letter-spacing:1px; display:block; margin-bottom:0.4rem; }
+    .form-input { width:100%; background:var(--surface); border:1px solid var(--border); color:var(--text); padding:0.6rem 0.8rem; border-radius:6px; font-family:var(--mono); font-size:0.85rem; }
+    .form-input:focus { outline:none; border-color:var(--accent); }
+    .btn-row { display:flex; gap:0.75rem; margin-top:1.5rem; }
+    .btn-primary { flex:1; background:var(--accent); color:#000; border:none; padding:0.75rem; border-radius:8px; font-family:var(--mono); font-size:0.8rem; font-weight:700; cursor:pointer; letter-spacing:1px; }
+    .btn-secondary { flex:1; background:var(--surface); color:var(--muted); border:1px solid var(--border); padding:0.75rem; border-radius:8px; font-family:var(--mono); font-size:0.8rem; cursor:pointer; letter-spacing:1px; }
+    .section-divider { border:none; border-top:1px solid var(--border); margin:1rem 0; }
+
+    /* Trade entry rows in modal */
+    .trade-entry { display:grid; grid-template-columns: 1fr 1fr 1fr 1fr auto; gap:0.4rem; align-items:center; margin-bottom:0.5rem; }
+    .trade-entry input, .trade-entry select { background:var(--surface); border:1px solid var(--border); color:var(--text); padding:0.45rem 0.5rem; border-radius:5px; font-family:var(--mono); font-size:0.75rem; width:100%; }
+    .trade-entry button { background:rgba(255,71,87,0.15); border:1px solid rgba(255,71,87,0.3); color:var(--danger); width:28px; height:28px; border-radius:5px; cursor:pointer; font-size:0.8rem; }
+    .add-trade-btn { font-family:var(--mono); font-size:0.7rem; color:var(--accent); background:rgba(0,229,160,0.08); border:1px solid rgba(0,229,160,0.2); padding:0.45rem 1rem; border-radius:6px; cursor:pointer; letter-spacing:1px; width:100%; margin-top:0.5rem; }
+
+    @media(max-width:600px){
+      header{padding:0 1rem;} main{padding:2rem 1rem 4rem;}
+      nav a{font-size:0.6rem;padding:0.3rem 0.5rem;}
+      .trade-entry{grid-template-columns:1fr 1fr; row-gap:0.3rem;}
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="logo">TRADER<span>X</span></a>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="live_accounts.html" class="active">Live</a>
+    <a href="propfirm.html">PropFirm</a>
+  </nav>
+</header>
+
+<main>
+  <div class="page-title">LIVE <span>ACCOUNTS</span></div>
+  <div class="page-sub">Real money. Real stakes. Every trade tracked.</div>
+
+  <!-- Vantage Account -->
+  <div class="section-label">Vantage · Live Account</div>
+  <div class="account-hero">
+    <div class="account-hero-header">
+      <div class="account-name">VANTAGE LIVE</div>
+      <div class="account-badge" id="v-status-badge">● CHALLENGE ACTIVE</div>
+    </div>
+
+    <div class="big-stats">
+      <div class="big-stat">
+        <div class="big-stat-label">START BALANCE</div>
+        <div class="big-stat-val neutral">$30.00</div>
+      </div>
+      <div class="big-stat">
+        <div class="big-stat-label">CURRENT BALANCE</div>
+        <div class="big-stat-val green" id="v-current-bal">$30.00</div>
+      </div>
+      <div class="big-stat">
+        <div class="big-stat-label">TARGET</div>
+        <div class="big-stat-val neutral">$100.00</div>
+      </div>
+      <div class="big-stat">
+        <div class="big-stat-label">TOTAL P&L</div>
+        <div class="big-stat-val green" id="v-total-pnl">+$0.00</div>
+      </div>
+      <div class="big-stat">
+        <div class="big-stat-label">DAYS LEFT</div>
+        <div class="big-stat-val neutral" id="v-days-left">5</div>
+      </div>
+      <div class="big-stat">
+        <div class="big-stat-label">TOTAL TRADES</div>
+        <div class="big-stat-val neutral" id="v-trade-count">0</div>
+      </div>
+    </div>
+
+    <div class="prog-wrap">
+      <div class="prog-meta">
+        <span>Progress to $100</span>
+        <span id="v-pct" style="color:var(--accent);font-weight:700;">0%</span>
+      </div>
+      <div class="prog-bar"><div class="prog-fill" id="v-bar" style="width:0%"></div></div>
+    </div>
+
+    <div class="days-tracker" id="v-days-tracker">
+      <!-- generated by JS -->
+    </div>
+  </div>
+
+  <!-- Trade Log -->
+  <div class="section-label">Trade Log · Vantage</div>
+  <div class="table-wrap" style="margin-bottom:3rem;">
+    <table class="trade-table">
+      <thead>
+        <tr>
+          <th>DATE</th>
+          <th>PAIR</th>
+          <th>TYPE</th>
+          <th>LOTS</th>
+          <th>ENTRY</th>
+          <th>EXIT</th>
+          <th>P&L</th>
+          <th>NOTE</th>
+        </tr>
+      </thead>
+      <tbody id="v-trade-log">
+        <tr><td colspan="8" style="color:var(--muted);text-align:center;padding:2rem;font-size:0.75rem;">No trades logged yet.</td></tr>
+      </tbody>
+    </table>
+  </div>
+</main>
+
+<footer>
+  <div>VANTAGE LIVE · $30 → $100 CHALLENGE · TRACKED DAILY</div>
+</footer>
+
+<!-- Edit Modal -->
+<div class="modal" id="edit-modal">
+  <div class="modal-box">
+    <div class="modal-title">EDIT LIVE ACCOUNT</div>
+
+    <div class="form-group">
+      <label class="form-label">CURRENT BALANCE ($)</label>
+      <input class="form-input" id="e-v-bal" type="number" step="0.01" placeholder="30.00" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">DAYS COMPLETED (0–5)</label>
+      <input class="form-input" id="e-v-days" type="number" min="0" max="5" placeholder="0" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">STATUS</label>
+      <select class="form-input" id="e-v-status">
+        <option value="active">Challenge Active</option>
+        <option value="passed">Challenge Passed ✅</option>
+        <option value="failed">Challenge Failed ❌</option>
+      </select>
+    </div>
+
+    <hr class="section-divider" />
+    <div style="font-family:var(--mono);font-size:0.65rem;color:var(--muted);letter-spacing:1px;margin-bottom:0.75rem;">TRADE LOG</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr auto;gap:0.4rem;margin-bottom:0.4rem;">
+      <span style="font-family:var(--mono);font-size:0.55rem;color:var(--muted);">DATE</span>
+      <span style="font-family:var(--mono);font-size:0.55rem;color:var(--muted);">PAIR</span>
+      <span style="font-family:var(--mono);font-size:0.55rem;color:var(--muted);">TYPE</span>
+      <span style="font-family:var(--mono);font-size:0.55rem;color:var(--muted);">LOTS</span>
+      <span style="font-family:var(--mono);font-size:0.55rem;color:var(--muted);">P&L</span>
+      <span></span>
+    </div>
+    <div id="trade-entries-v"></div>
+    <button class="add-trade-btn" onclick="addTradeRow('v')">+ ADD TRADE</button>
+
+    <div class="btn-row">
+      <button class="btn-primary" onclick="saveAll()">SAVE CHANGES</button>
+      <button class="btn-secondary" onclick="closeModal()">CANCEL</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let db = JSON.parse(localStorage.getItem('traderx-live') || '{}');
+  if (!db.v_trades) db.v_trades = [];
+
+  function render() {
+    const bal = parseFloat(db.v_bal || 30);
+    const daysDone = parseInt(db.v_days || 0);
+    const totalPnl = bal - 30;
+    const pct = Math.max(Math.min((totalPnl / 70) * 100, 100), 0);
+
+    document.getElementById('v-current-bal').textContent = '$' + bal.toFixed(2);
+    document.getElementById('v-current-bal').className = 'big-stat-val ' + (totalPnl >= 0 ? 'green' : 'red');
+    document.getElementById('v-total-pnl').textContent = (totalPnl >= 0 ? '+' : '') + '$' + totalPnl.toFixed(2);
+    document.getElementById('v-total-pnl').className = 'big-stat-val ' + (totalPnl >= 0 ? 'green' : 'red');
+    document.getElementById('v-days-left').textContent = Math.max(5 - daysDone, 0);
+    document.getElementById('v-bar').style.width = pct + '%';
+    document.getElementById('v-pct').textContent = pct.toFixed(1) + '%';
+    document.getElementById('v-trade-count').textContent = db.v_trades.length;
+
+    const statusMap = { active: '● CHALLENGE ACTIVE', passed: '✅ PASSED!', failed: '❌ FAILED' };
+    document.getElementById('v-status-badge').textContent = statusMap[db.v_status || 'active'];
+
+    // Days tracker
+    const tracker = document.getElementById('v-days-tracker');
+    tracker.innerHTML = '';
+    for (let i = 1; i <= 5; i++) {
+      const done = i <= daysDone;
+      tracker.innerHTML += `<div class="day-pill ${done ? 'done' : ''}"><span class="d-icon">${done ? '✅' : '⬜'}</span><span>Day ${i}</span></div>`;
+    }
+
+    // Trade log
+    const tbody = document.getElementById('v-trade-log');
+    if (!db.v_trades.length) {
+      tbody.innerHTML = '<tr><td colspan="8" style="color:var(--muted);text-align:center;padding:2rem;font-size:0.75rem;">No trades logged yet.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = db.v_trades.map(t => {
+      const pnlNum = parseFloat(t.pnl || 0);
+      const cls = pnlNum >= 0 ? 'profit' : 'loss';
+      const pnlStr = (pnlNum >= 0 ? '+' : '') + '$' + Math.abs(pnlNum).toFixed(2);
+      return `<tr>
+        <td>${t.date || '-'}</td>
+        <td class="pair">${t.pair || '-'}</td>
+        <td><span class="${t.type === 'BUY' ? 'badge-buy' : 'badge-sell'}">${t.type || 'BUY'}</span></td>
+        <td>${t.lots || '-'}</td>
+        <td>${t.entry || '-'}</td>
+        <td>${t.exit || '-'}</td>
+        <td class="${cls}">${pnlStr}</td>
+        <td style="color:var(--muted);font-size:0.7rem;">${t.note || ''}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  function addTradeRow(acct) {
+    const container = document.getElementById(`trade-entries-${acct}`);
+    const idx = container.children.length;
+    const div = document.createElement('div');
+    div.className = 'trade-entry';
+    div.style.gridTemplateColumns = '80px 1fr 60px 50px 70px 70px 70px 1fr auto';
+    div.innerHTML = `
+      <input placeholder="Date" data-field="date" />
+      <input placeholder="Pair" data-field="pair" />
+      <select data-field="type"><option>BUY</option><option>SELL</option></select>
+      <input placeholder="Lots" data-field="lots" />
+      <input placeholder="Entry" data-field="entry" />
+      <input placeholder="Exit" data-field="exit" />
+      <input placeholder="P&L" data-field="pnl" type="number" step="0.01" />
+      <input placeholder="Note" data-field="note" />
+      <button onclick="this.parentElement.remove()">×</button>
+    `;
+    container.appendChild(div);
+  }
+
+  function saveAll() {
+    db.v_bal = document.getElementById('e-v-bal').value;
+    db.v_days = document.getElementById('e-v-days').value;
+    db.v_status = document.getElementById('e-v-status').value;
+
+    // Collect trades
+    db.v_trades = [];
+    document.querySelectorAll('#trade-entries-v .trade-entry').forEach(row => {
+      const t = {};
+      row.querySelectorAll('[data-field]').forEach(inp => { t[inp.dataset.field] = inp.value; });
+      if (t.pair || t.pnl) db.v_trades.push(t);
+    });
+
+    localStorage.setItem('traderx-live', JSON.stringify(db));
+    closeModal();
+    render();
+  }
+
+  function openModal() {
+    document.getElementById('e-v-bal').value = db.v_bal || '';
+    document.getElementById('e-v-days').value = db.v_days || '';
+    document.getElementById('e-v-status').value = db.v_status || 'active';
+
+    // Populate trade rows
+    const container = document.getElementById('trade-entries-v');
+    container.innerHTML = '';
+    db.v_trades.forEach(t => {
+      addTradeRow('v');
+      const row = container.lastChild;
+      row.querySelectorAll('[data-field]').forEach(inp => { inp.value = t[inp.dataset.field] || ''; });
+    });
+
+    document.getElementById('edit-modal').classList.add('open');
+  }
+
+  function closeModal() { document.getElementById('edit-modal').classList.remove('open'); }
+
+  // Triple-click logo
+  let cc = 0, ct;
+  document.querySelector('.logo').addEventListener('click', () => {
+    cc++; clearTimeout(ct);
+    ct = setTimeout(() => { cc = 0; }, 600);
+    if (cc >= 3) { cc = 0; openModal(); }
+  });
+
+  render();
+</script>
+</body>
+</html>

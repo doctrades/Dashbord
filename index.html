@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>doc.trades — Live Progress</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #090c10;
+      --surface: #0f141a;
+      --card: #141b24;
+      --border: #1e2a38;
+      --accent: #00e5a0;
+      --accent2: #f7b731;
+      --danger: #ff4757;
+      --text: #e8edf3;
+      --muted: #5a6a7e;
+      --mono: 'Space Mono', monospace;
+      --display: 'Bebas Neue', sans-serif;
+      --body: 'DM Sans', sans-serif;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--body);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,229,160,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,229,160,0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Glow blob */
+    body::after {
+      content: '';
+      position: fixed;
+      top: -20%;
+      right: -10%;
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(0,229,160,0.06) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(9,12,16,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      font-family: var(--display);
+      font-size: 1.6rem;
+      letter-spacing: 3px;
+      color: var(--accent);
+    }
+
+    .logo span { color: var(--text); }
+
+    nav { display: flex; gap: 0.25rem; }
+
+    nav a {
+      color: var(--muted);
+      text-decoration: none;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      letter-spacing: 1px;
+      padding: 0.4rem 0.8rem;
+      border-radius: 4px;
+      transition: all 0.2s;
+      text-transform: uppercase;
+    }
+
+    nav a:hover, nav a.active {
+      color: var(--accent);
+      background: rgba(0,229,160,0.08);
+    }
+
+    nav a.active { border: 1px solid rgba(0,229,160,0.3); }
+
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 3rem 2rem 5rem;
+    }
+
+    /* Hero */
+    .hero {
+      text-align: center;
+      padding: 3rem 0 4rem;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .hero-tag {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 3px;
+      color: var(--accent);
+      background: rgba(0,229,160,0.1);
+      border: 1px solid rgba(0,229,160,0.25);
+      padding: 0.3rem 1rem;
+      border-radius: 2px;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-family: var(--display);
+      font-size: clamp(3.5rem, 8vw, 6rem);
+      letter-spacing: 6px;
+      line-height: 0.95;
+      margin-bottom: 1.2rem;
+    }
+
+    .hero h1 .highlight { color: var(--accent); }
+
+    .hero p {
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 480px;
+      margin: 0 auto 2rem;
+      line-height: 1.7;
+    }
+
+    .pulse-dot {
+      display: inline-block;
+      width: 8px; height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      margin-right: 6px;
+      animation: pulse 1.5s ease-in-out infinite;
+      vertical-align: middle;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(0,229,160,0.6); }
+      50% { box-shadow: 0 0 0 8px rgba(0,229,160,0); }
+    }
+
+    /* Section title */
+    .section-label {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 3px;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* Challenge cards */
+    .challenges-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 4rem;
+    }
+
+    .challenge-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s, border-color 0.2s;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .challenge-card:nth-child(2) { animation-delay: 0.1s; }
+
+    .challenge-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(0,229,160,0.3);
+    }
+
+    .challenge-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+
+    .challenge-card.gold::before {
+      background: linear-gradient(90deg, var(--accent2), transparent);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.25rem;
+    }
+
+    .card-platform {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      letter-spacing: 2px;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .card-status {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 3px;
+      letter-spacing: 1px;
+    }
+
+    .status-live {
+      color: var(--accent);
+      background: rgba(0,229,160,0.1);
+      border: 1px solid rgba(0,229,160,0.3);
+    }
+
+    .status-gold {
+      color: var(--accent2);
+      background: rgba(247,183,49,0.1);
+      border: 1px solid rgba(247,183,49,0.3);
+    }
+
+    .card-title {
+      font-family: var(--display);
+      font-size: 1.6rem;
+      letter-spacing: 2px;
+      margin-bottom: 0.4rem;
+      line-height: 1.1;
+    }
+
+    .card-subtitle {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 1.5rem;
+    }
+
+    /* Progress bar */
+    .progress-wrap {
+      margin-bottom: 1.5rem;
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .progress-meta .value { color: var(--text); font-weight: 700; }
+
+    .progress-bar {
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: linear-gradient(90deg, var(--accent), #00b07a);
+      transition: width 1s ease;
+      position: relative;
+    }
+
+    .progress-fill.gold {
+      background: linear-gradient(90deg, var(--accent2), #d4a017);
+    }
+
+    .progress-fill::after {
+      content: '';
+      position: absolute;
+      top: 0; right: 0;
+      width: 20px; height: 100%;
+      background: rgba(255,255,255,0.3);
+      filter: blur(4px);
+      animation: shimmer 2s ease-in-out infinite;
+    }
+
+    @keyframes shimmer {
+      0%, 100% { opacity: 0; }
+      50% { opacity: 1; }
+    }
+
+    /* Stats row */
+    .stats-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.75rem;
+    }
+
+    .stat-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.75rem;
+    }
+
+    .stat-label {
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      color: var(--muted);
+      letter-spacing: 1px;
+      margin-bottom: 0.25rem;
+    }
+
+    .stat-value {
+      font-family: var(--mono);
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .stat-value.green { color: var(--accent); }
+    .stat-value.gold { color: var(--accent2); }
+    .stat-value.red { color: var(--danger); }
+
+    /* Days countdown */
+    .days-row {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .day-box {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.5rem 0.25rem;
+      text-align: center;
+    }
+
+    .day-box.done {
+      border-color: rgba(0,229,160,0.4);
+      background: rgba(0,229,160,0.05);
+    }
+
+    .day-box .day-n {
+      font-family: var(--mono);
+      font-size: 0.55rem;
+      color: var(--muted);
+    }
+
+    .day-box .day-icon {
+      font-size: 0.75rem;
+      margin-top: 2px;
+    }
+
+    /* Quick links */
+    .links-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .nav-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.5rem;
+      text-decoration: none;
+      color: var(--text);
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .nav-card:nth-child(2) { animation-delay: 0.12s; }
+
+    .nav-card:hover {
+      border-color: rgba(0,229,160,0.3);
+      background: rgba(0,229,160,0.04);
+      transform: translateY(-2px);
+    }
+
+    .nav-card-icon { font-size: 1.5rem; }
+
+    .nav-card-title {
+      font-family: var(--display);
+      font-size: 1.2rem;
+      letter-spacing: 2px;
+    }
+
+    .nav-card-desc {
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .nav-card-arrow {
+      color: var(--accent);
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      margin-top: auto;
+      padding-top: 0.75rem;
+    }
+
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 2rem;
+      border-top: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--muted);
+      letter-spacing: 1px;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      header { padding: 0 1rem; }
+      main { padding: 2rem 1rem 4rem; }
+      .hero h1 { font-size: 3rem; }
+      nav a { font-size: 0.6rem; padding: 0.3rem 0.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">doc <span>trades</span></div>
+  <nav>
+    <a href="index.html" class="active">Home</a>
+    <a href="live_accounts.html">Live</a>
+    <a href="propfirm.html">PropFirm</a>
+  </nav>
+</header>
+
+<main>
+  <!-- <div class="hero">
+    <div class="hero-tag"><span class="pulse-dot"></span>LIVE TRADING PROGRESS</div>
+    <h1>GRIND.<br/><span class="highlight">GROW.</span><br/>REPEAT.</h1>
+    <p>Real trades. Real stakes. Following my journey from retail trader to funded pro — every challenge, every payout, every loss.</p>
+  </div> -->
+
+  <!-- Active Challenges -->
+  <div class="section-label">Active Challenges</div>
+  <div class="challenges-grid">
+
+    <!-- Vantage Live Challenge -->
+    <div class="challenge-card">
+      <div class="card-header">
+        <div class="card-platform">Vantage · Live Account</div>
+        <div class="card-status status-live">● LIVE</div>
+      </div>
+      <div class="card-title">$30 → $100</div>
+      <div class="card-subtitle">Turning $30 into $100 in 5 days</div>
+
+      <div class="progress-wrap">
+        <div class="progress-meta">
+          <span>Balance</span>
+          <span class="value" id="vantage-bal">$30.00</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="vantage-bar" style="width: 0%"></div>
+        </div>
+        <div class="progress-meta" style="margin-top:0.4rem;">
+          <span>Target: $100</span>
+          <span class="value" id="vantage-pct">0%</span>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-label">P&L TODAY</div>
+          <div class="stat-value green" id="vantage-pnl">+$0.00</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">DAYS LEFT</div>
+          <div class="stat-value" id="vantage-days">5</div>
+        </div>
+      </div>
+
+      <div class="days-row" id="vantage-days-row">
+        <div class="day-box"><div class="day-n">D1</div><div class="day-icon">⬜</div></div>
+        <div class="day-box"><div class="day-n">D2</div><div class="day-icon">⬜</div></div>
+        <div class="day-box"><div class="day-n">D3</div><div class="day-icon">⬜</div></div>
+        <div class="day-box"><div class="day-n">D4</div><div class="day-icon">⬜</div></div>
+        <div class="day-box"><div class="day-n">D5</div><div class="day-icon">⬜</div></div>
+      </div>
+    </div>
+
+    <!-- GOAT PropFirm Challenge -->
+    <div class="challenge-card gold">
+      <div class="card-header">
+        <div class="card-platform">GOAT Funded · 5K Eval</div>
+        <div class="card-status status-gold">● ACTIVE</div>
+      </div>
+      <div class="card-title">PROPFIRM EVAL</div>
+      <div class="card-subtitle">Passing $5,000 evaluation in 10 days</div>
+
+      <div class="progress-wrap">
+        <div class="progress-meta">
+          <span>Profit Target</span>
+          <span class="value" id="goat-bal">$0.00</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill gold" id="goat-bar" style="width: 0%"></div>
+        </div>
+        <div class="progress-meta" style="margin-top:0.4rem;">
+          <span>Target: $500 (10%)</span>
+          <span class="value" id="goat-pct">0%</span>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-label">P&L TODAY</div>
+          <div class="stat-value gold" id="goat-pnl">+$0.00</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">DAYS LEFT</div>
+          <div class="stat-value" id="goat-days">10</div>
+        </div>
+      </div>
+
+      <div class="days-row" id="goat-days-row">
+        <div class="day-box"><div class="day-n">D1</div><div class="day-icon">⬜</div></div>
+        <div class="day-box"><div class="day-n">D2</div><div class="day-icon">⬜</div></div>
+        <div class="day-box"><div class="day-n">D3</div><div class="day-icon">⬜</div></div>
+        <div class="day-box"><div class="day-n">D4</div><div class="day-icon">⬜</div></div>
+        <div class="day-box"><div class="day-n">D5</div><div class="day-icon">⬜</div></div>
+        <div class="day-box"><div class="day-n">D6</div><div class="day-icon">⬜</div></div>
+        <div class="day-box"><div class="day-n">D7</div><div class="day-icon">⬜</div></div>
+        <div class="day-box"><div class="day-n">D8</div><div class="day-icon">⬜</div></div>
+        <div class="day-box"><div class="day-n">D9</div><div class="day-icon">⬜</div></div>
+        <div class="day-box"><div class="day-n">D10</div><div class="day-icon">⬜</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quick Nav -->
+  <div class="section-label">Explore</div>
+  <div class="links-row">
+    <a class="nav-card" href="live_accounts.html">
+      <div class="nav-card-icon">📈</div>
+      <div class="nav-card-title">LIVE ACCOUNTS</div>
+      <div class="nav-card-desc">Track real money challenges, P&L history, and account growth in real-time.</div>
+      <div class="nav-card-arrow">VIEW DETAILS →</div>
+    </a>
+    <a class="nav-card" href="propfirm.html">
+      <div class="nav-card-icon">🏆</div>
+      <div class="nav-card-title">PROP FIRM</div>
+      <div class="nav-card-desc">Eval progress, payouts received, and challenges failed — full transparency.</div>
+      <div class="nav-card-arrow">VIEW DETAILS →</div>
+    </a>
+  </div>
+</main>
+
+<footer>
+  <div>BUILT IN PUBLIC · EVERY TRADE DOCUMENTED · NO SIGNAL SELLING</div>
+</footer>
+
+<!-- Edit Panel (password protected) -->
+<div id="edit-overlay" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:200; display:none; align-items:center; justify-content:center;">
+  <div style="background:var(--card); border:1px solid var(--border); border-radius:14px; padding:2rem; width:90%; max-width:480px;">
+    <div style="font-family:var(--display); font-size:1.4rem; letter-spacing:2px; margin-bottom:1.5rem; color:var(--accent);">EDIT CHALLENGES</div>
+    <div style="display:grid; gap:1rem;">
+      <div>
+        <label style="font-family:var(--mono); font-size:0.65rem; color:var(--muted); letter-spacing:1px; display:block; margin-bottom:0.4rem;">VANTAGE BALANCE ($)</label>
+        <input id="inp-vantage-bal" type="number" step="0.01" placeholder="30.00" style="width:100%; background:var(--surface); border:1px solid var(--border); color:var(--text); padding:0.6rem 0.8rem; border-radius:6px; font-family:var(--mono); font-size:0.9rem;" />
+      </div>
+      <div>
+        <label style="font-family:var(--mono); font-size:0.65rem; color:var(--muted); letter-spacing:1px; display:block; margin-bottom:0.4rem;">VANTAGE P&L TODAY ($)</label>
+        <input id="inp-vantage-pnl" type="number" step="0.01" placeholder="0.00" style="width:100%; background:var(--surface); border:1px solid var(--border); color:var(--text); padding:0.6rem 0.8rem; border-radius:6px; font-family:var(--mono); font-size:0.9rem;" />
+      </div>
+      <div>
+        <label style="font-family:var(--mono); font-size:0.65rem; color:var(--muted); letter-spacing:1px; display:block; margin-bottom:0.4rem;">VANTAGE DAYS COMPLETED</label>
+        <input id="inp-vantage-days-done" type="number" min="0" max="5" placeholder="0" style="width:100%; background:var(--surface); border:1px solid var(--border); color:var(--text); padding:0.6rem 0.8rem; border-radius:6px; font-family:var(--mono); font-size:0.9rem;" />
+      </div>
+      <hr style="border:none; border-top:1px solid var(--border);" />
+      <div>
+        <label style="font-family:var(--mono); font-size:0.65rem; color:var(--muted); letter-spacing:1px; display:block; margin-bottom:0.4rem;">GOAT PROFIT MADE ($)</label>
+        <input id="inp-goat-bal" type="number" step="0.01" placeholder="0.00" style="width:100%; background:var(--surface); border:1px solid var(--border); color:var(--text); padding:0.6rem 0.8rem; border-radius:6px; font-family:var(--mono); font-size:0.9rem;" />
+      </div>
+      <div>
+        <label style="font-family:var(--mono); font-size:0.65rem; color:var(--muted); letter-spacing:1px; display:block; margin-bottom:0.4rem;">GOAT P&L TODAY ($)</label>
+        <input id="inp-goat-pnl" type="number" step="0.01" placeholder="0.00" style="width:100%; background:var(--surface); border:1px solid var(--border); color:var(--text); padding:0.6rem 0.8rem; border-radius:6px; font-family:var(--mono); font-size:0.9rem;" />
+      </div>
+      <div>
+        <label style="font-family:var(--mono); font-size:0.65rem; color:var(--muted); letter-spacing:1px; display:block; margin-bottom:0.4rem;">GOAT DAYS COMPLETED</label>
+        <input id="inp-goat-days-done" type="number" min="0" max="10" placeholder="0" style="width:100%; background:var(--surface); border:1px solid var(--border); color:var(--text); padding:0.6rem 0.8rem; border-radius:6px; font-family:var(--mono); font-size:0.9rem;" />
+      </div>
+    </div>
+    <div style="display:flex; gap:0.75rem; margin-top:1.5rem;">
+      <button onclick="applyEdits()" style="flex:1; background:var(--accent); color:#000; border:none; padding:0.75rem; border-radius:8px; font-family:var(--mono); font-size:0.8rem; font-weight:700; cursor:pointer; letter-spacing:1px;">SAVE</button>
+      <button onclick="closeEdit()" style="flex:1; background:var(--surface); color:var(--muted); border:1px solid var(--border); padding:0.75rem; border-radius:8px; font-family:var(--mono); font-size:0.8rem; cursor:pointer; letter-spacing:1px;">CANCEL</button>
+    </div>
+  </div>
+</div>
+
+<!-- Secret edit button - triple click logo -->
+<script>
+  // Data stored in localStorage
+  let data = JSON.parse(localStorage.getItem('doc.trades-index') || '{}');
+
+  function render() {
+    // Vantage
+    const vBal = parseFloat(data.vantage_bal || 30);
+    const vPnl = parseFloat(data.vantage_pnl || 0);
+    const vDaysDone = parseInt(data.vantage_days_done || 0);
+    const vPct = Math.min(((vBal - 30) / 70) * 100, 100);
+
+    document.getElementById('vantage-bal').textContent = '$' + vBal.toFixed(2);
+    document.getElementById('vantage-bar').style.width = Math.max(vPct, 0) + '%';
+    document.getElementById('vantage-pct').textContent = Math.max(vPct, 0).toFixed(1) + '%';
+    document.getElementById('vantage-pnl').textContent = (vPnl >= 0 ? '+' : '') + '$' + vPnl.toFixed(2);
+    document.getElementById('vantage-pnl').className = 'stat-value ' + (vPnl >= 0 ? 'green' : 'red');
+    document.getElementById('vantage-days').textContent = Math.max(5 - vDaysDone, 0);
+    const vBoxes = document.querySelectorAll('#vantage-days-row .day-box');
+    vBoxes.forEach((b, i) => {
+      b.classList.toggle('done', i < vDaysDone);
+      b.querySelector('.day-icon').textContent = i < vDaysDone ? '✅' : '⬜';
+    });
+
+    // GOAT
+    const gBal = parseFloat(data.goat_bal || 0);
+    const gPnl = parseFloat(data.goat_pnl || 0);
+    const gDaysDone = parseInt(data.goat_days_done || 0);
+    const gPct = Math.min((gBal / 500) * 100, 100);
+
+    document.getElementById('goat-bal').textContent = '$' + gBal.toFixed(2);
+    document.getElementById('goat-bar').style.width = Math.max(gPct, 0) + '%';
+    document.getElementById('goat-pct').textContent = Math.max(gPct, 0).toFixed(1) + '%';
+    document.getElementById('goat-pnl').textContent = (gPnl >= 0 ? '+' : '') + '$' + gPnl.toFixed(2);
+    document.getElementById('goat-pnl').className = 'stat-value ' + (gPnl >= 0 ? 'gold' : 'red');
+    document.getElementById('goat-days').textContent = Math.max(10 - gDaysDone, 0);
+    const gBoxes = document.querySelectorAll('#goat-days-row .day-box');
+    gBoxes.forEach((b, i) => {
+      b.classList.toggle('done', i < gDaysDone);
+      b.querySelector('.day-icon').textContent = i < gDaysDone ? '✅' : '⬜';
+    });
+  }
+
+  // Triple-click logo to open edit
+  let clickCount = 0, clickTimer;
+  document.querySelector('.logo').addEventListener('click', () => {
+    clickCount++;
+    clearTimeout(clickTimer);
+    clickTimer = setTimeout(() => { clickCount = 0; }, 600);
+    if (clickCount >= 3) {
+      clickCount = 0;
+      openEdit();
+    }
+  });
+
+  function openEdit() {
+    document.getElementById('inp-vantage-bal').value = data.vantage_bal || '';
+    document.getElementById('inp-vantage-pnl').value = data.vantage_pnl || '';
+    document.getElementById('inp-vantage-days-done').value = data.vantage_days_done || '';
+    document.getElementById('inp-goat-bal').value = data.goat_bal || '';
+    document.getElementById('inp-goat-pnl').value = data.goat_pnl || '';
+    document.getElementById('inp-goat-days-done').value = data.goat_days_done || '';
+    document.getElementById('edit-overlay').style.display = 'flex';
+  }
+
+  function closeEdit() {
+    document.getElementById('edit-overlay').style.display = 'none';
+  }
+
+  function applyEdits() {
+    data.vantage_bal = document.getElementById('inp-vantage-bal').value;
+    data.vantage_pnl = document.getElementById('inp-vantage-pnl').value;
+    data.vantage_days_done = document.getElementById('inp-vantage-days-done').value;
+    data.goat_bal = document.getElementById('inp-goat-bal').value;
+    data.goat_pnl = document.getElementById('inp-goat-pnl').value;
+    data.goat_days_done = document.getElementById('inp-goat-days-done').value;
+    localStorage.setItem('doc.trades-index', JSON.stringify(data));
+    closeEdit();
+    render();
+  }
+
+  render();
+</script>
+</body>
+</html>
