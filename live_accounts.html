@@ -340,7 +340,7 @@
           <div class="big-stat-val green" id="v-total-pnl"></div>
         </div>
         <div class="big-stat">
-          <div class="big-stat-label">DAYS LEFT</div>
+          <div class="big-stat-label">DAYS COMPLETED</div>
           <div class="big-stat-val neutral" id="v-days-left"></div>
         </div>
         <div class="big-stat">
@@ -444,7 +444,7 @@
     const pct = ((currentBalance - startBalance) / (target - startBalance) * 100).toFixed(2);
     document.getElementById('start_balance').textContent = '$' + startBalance.toFixed(2);
     document.getElementById('v-target-bal').textContent = '$' + target.toFixed(1);
-    document.getElementById('v-days-left').textContent = daysLeft;
+    document.getElementById('v-days-left').textContent = daysCompleted;
     document.getElementById('v-current-bal').textContent = '$' + currentBalance.toFixed(2);
     document.getElementById('v-total-pnl').textContent = (totalPnl >= 0 ? '+' : '') + '$' + totalPnl.toFixed(2);
     document.getElementById('v-total-pnl').className = 'big-stat-val ' + (totalPnl >= 0 ? 'green' : 'red');
