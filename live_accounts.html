@@ -208,7 +208,9 @@
     }
 
     /* Tooltip */
-    .cal-day:hover .cal-tooltip { display: block; }
+    .cal-day:hover .cal-tooltip {
+      display: block;
+    }
 
     .cal-tooltip {
       display: none;
@@ -280,9 +282,17 @@
         border-radius: 5px;
       }
 
-      .cal-day .day-pnl { display: none; }
-      .cal-day .day-num { font-size: 0.6rem; }
-      .cal-month-title { font-size: 1.1rem; }
+      .cal-day .day-pnl {
+        display: none;
+      }
+
+      .cal-day .day-num {
+        font-size: 0.6rem;
+      }
+
+      .cal-month-title {
+        font-size: 1.1rem;
+      }
     }
   </style>
 </head>
@@ -315,27 +325,27 @@
       <div class="big-stats">
         <div class="big-stat">
           <div class="big-stat-label">START BALANCE</div>
-          <div class="big-stat-val neutral">$30.00</div>
+          <div class="big-stat-val neutral" id="start_balance"></div>
         </div>
         <div class="big-stat">
           <div class="big-stat-label">CURRENT BALANCE</div>
-          <div class="big-stat-val green" id="v-current-bal">$30.00</div>
+          <div class="big-stat-val green" id="v-current-bal"></div>
         </div>
         <div class="big-stat">
           <div class="big-stat-label">TARGET</div>
-          <div class="big-stat-val neutral">$26,022</div>
+          <div class="big-stat-val neutral" id="v-target-bal"></div>
         </div>
         <div class="big-stat">
           <div class="big-stat-label">TOTAL P&L</div>
-          <div class="big-stat-val green" id="v-total-pnl">+$0.00</div>
+          <div class="big-stat-val green" id="v-total-pnl"></div>
         </div>
         <div class="big-stat">
           <div class="big-stat-label">DAYS LEFT</div>
-          <div class="big-stat-val neutral" id="v-days-left">100</div>
+          <div class="big-stat-val neutral" id="v-days-left"></div>
         </div>
         <div class="big-stat">
           <div class="big-stat-label">TOTAL TRADES</div>
-          <div class="big-stat-val neutral" id="v-trade-count">0</div>
+          <div class="big-stat-val neutral" id="v-trade-count"></div>
         </div>
       </div>
 
@@ -379,8 +389,8 @@
           </thead>
           <tbody id="v-trade-log">
             <tr>
-              <td colspan="6"
-                style="color:var(--muted);text-align:center;padding:2rem;font-size:0.75rem;">No trades logged yet.
+              <td colspan="6" style="color:var(--muted);text-align:center;padding:2rem;font-size:0.75rem;">No trades
+                logged yet.
               </td>
             </tr>
           </tbody>
@@ -427,7 +437,23 @@
   <footer>
     <div>VANTAGE LIVE · $30 → $100 CHALLENGE · TRACKED DAILY</div>
   </footer>
+  <script>
+    //INIT STATS
+    const totalPnl = tradeData.reduce((s, t) => s + t.pnl, 0);
+    const currentBalance = startBalance + totalPnl;
+    const pct = ((currentBalance - startBalance) / (target - startBalance) * 100).toFixed(2);
+    document.getElementById('start_balance').textContent = '$' + startBalance.toFixed(2);
+    document.getElementById('v-target-bal').textContent = '$' + target.toFixed(2);
+    document.getElementById('v-days-left').textContent = daysLeft;
+    document.getElementById('v-current-bal').textContent = '$' + currentBalance.toFixed(2);
+    document.getElementById('v-total-pnl').textContent = (totalPnl >= 0 ? '+' : '') + '$' + totalPnl.toFixed(2);
+    document.getElementById('v-total-pnl').className = 'big-stat-val ' + (totalPnl >= 0 ? 'green' : 'red');
+    document.getElementById('v-trade-count').textContent = tradeData.reduce((s, t) => s + t.trades, 0);
+    document.getElementById('v-pct').textContent = pct + '%';
+    document.getElementById('v-bar').style.width = Math.min(pct, 100) + '%';
+    document.querySelector('div.prog-meta > span:nth-child(1)').textContent = 'Progress to $ ' +target;
 
+  </script>
   <script>
     // ──────────────────────────────────────────────
     // POPULATE TRADE LOG TABLE
@@ -577,4 +603,5 @@
   </script>
 
 </body>
+
 </html>
