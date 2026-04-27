@@ -1,103 +1,588 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Live Accounts — doc.trades</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="styles.css">
 
+  <style>
+    /* ── View Toggle ── */
+    .view-toggle-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .view-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 3px;
+    }
+
+    .toggle-btn {
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      letter-spacing: 1.5px;
+      padding: 0.45rem 1.1rem;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all 0.2s;
+      text-transform: uppercase;
+    }
+
+    .toggle-btn.active {
+      background: var(--card);
+      color: var(--accent);
+      border: 1px solid rgba(0, 229, 160, 0.3);
+      box-shadow: 0 0 12px rgba(0, 229, 160, 0.08);
+    }
+
+    /* ── View containers ── */
+    .tradelog-view,
+    .calendar-view {
+      display: none;
+      animation: fadeUp 0.25s ease both;
+    }
+
+    .tradelog-view.visible,
+    .calendar-view.visible {
+      display: block;
+    }
+
+    /* ── Calendar ── */
+    .cal-outer {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .cal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .cal-nav {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .cal-nav-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      width: 30px;
+      height: 30px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      line-height: 1;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .cal-nav-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .cal-month-title {
+      font-family: var(--display);
+      font-size: 1.5rem;
+      letter-spacing: 3px;
+    }
+
+    .cal-legend {
+      display: flex;
+      gap: 1rem;
+      font-family: var(--mono);
+      font-size: 0.6rem;
+      color: var(--muted);
+      letter-spacing: 1px;
+      align-items: center;
+    }
+
+    .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 4px;
+      vertical-align: middle;
+    }
+
+    .cal-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      margin-bottom: 4px;
+    }
+
+    .cal-weekday {
+      text-align: center;
+      font-family: var(--mono);
+      font-size: 0.55rem;
+      letter-spacing: 1px;
+      color: var(--muted);
+      padding: 0.4rem 0;
+    }
+
+    .cal-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+
+    .cal-day {
+      aspect-ratio: 1;
+      min-height: 56px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 0.65rem;
+      color: var(--muted);
+      position: relative;
+      cursor: default;
+      transition: all 0.15s;
+    }
+
+    .cal-day.empty {
+      background: transparent;
+      border-color: transparent;
+    }
+
+    .cal-day.profit {
+      border-color: rgba(0, 229, 160, 0.35);
+      background: rgba(0, 229, 160, 0.06);
+      color: var(--accent);
+    }
+
+    .cal-day.loss {
+      border-color: rgba(255, 71, 87, 0.35);
+      background: rgba(255, 71, 87, 0.06);
+      color: var(--danger);
+    }
+
+    .cal-day.today {
+      border-color: rgba(247, 183, 49, 0.5);
+      box-shadow: 0 0 0 1px rgba(247, 183, 49, 0.2);
+    }
+
+    .cal-day .day-num {
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    .cal-day .day-pnl {
+      font-size: 0.52rem;
+      margin-top: 2px;
+    }
+
+    /* Tooltip */
+    .cal-day:hover .cal-tooltip { display: block; }
+
+    .cal-tooltip {
+      display: none;
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.6rem 0.85rem;
+      white-space: nowrap;
+      z-index: 20;
+      font-size: 0.62rem;
+      color: var(--text);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      line-height: 1.7;
+      pointer-events: none;
+    }
+
+    .cal-tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: var(--border);
+    }
+
+    .cal-tooltip strong {
+      color: var(--accent);
+    }
+
+    /* Monthly summary row */
+    .cal-summary {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .cal-sum-box {
+      flex: 1;
+      min-width: 90px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 0.65rem 0.9rem;
+    }
+
+    .cal-sum-label {
+      font-family: var(--mono);
+      font-size: 0.58rem;
+      color: var(--muted);
+      letter-spacing: 1px;
+      margin-bottom: 0.3rem;
+    }
+
+    .cal-sum-val {
+      font-family: var(--mono);
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    @media (max-width: 600px) {
+      .cal-day {
+        min-height: 40px;
+        border-radius: 5px;
+      }
+
+      .cal-day .day-pnl { display: none; }
+      .cal-day .day-num { font-size: 0.6rem; }
+      .cal-month-title { font-size: 1.1rem; }
+    }
+  </style>
 </head>
+
 <body>
 
-<header>
-  <a href="index.html" class="logo">doc <span>trades</span></a>
-  <nav>
-    <a href="index.html">Home</a>
-    <a href="live_accounts.html" class="active">Live</a>
-    <a href="propfirm.html">PropFirm</a>
-  </nav>
-</header>
+  <header>
+    <a href="index.html" class="logo">doc <span>trades</span></a>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="live_accounts.html" class="active">Live</a>
+      <a href="propfirm.html">PropFirm</a>
+    </nav>
+  </header>
 
-<main>
-  <div class="page-title">LIVE <span>ACCOUNTS</span></div>
-  <div class="page-sub">Real money. Real stakes. Every trade tracked.</div>
+  <main>
+    <div class="page-title">LIVE <span>ACCOUNTS</span></div>
+    <div class="page-sub">Real money. Real stakes. Every trade tracked.</div>
 
-  <!-- Vantage Account -->
-  <div class="section-label">Vantage · Live Account</div>
-  <div class="account-hero">
-    <div class="account-hero-header">
-      <div class="account-name">VANTAGE LIVE</div>
-      <div class="account-badge" id="v-status-badge">● CHALLENGE ACTIVE</div>
+    <!-- Vantage Account Hero -->
+    <div class="section-label">Vantage · Live Account · May 2, 2026</div>
+    <div class="account-hero">
+      <div class="account-hero-header">
+        <div class="account-name">7% Profit per day
+          <div class="card-subtitle">Investor Id - <br> Password - <br> Server - </div>
+        </div>
+        <div class="account-badge" id="v-status-badge">● CHALLENGE ACTIVE</div>
+      </div>
+
+      <div class="big-stats">
+        <div class="big-stat">
+          <div class="big-stat-label">START BALANCE</div>
+          <div class="big-stat-val neutral">$30.00</div>
+        </div>
+        <div class="big-stat">
+          <div class="big-stat-label">CURRENT BALANCE</div>
+          <div class="big-stat-val green" id="v-current-bal">$30.00</div>
+        </div>
+        <div class="big-stat">
+          <div class="big-stat-label">TARGET</div>
+          <div class="big-stat-val neutral">$26,022</div>
+        </div>
+        <div class="big-stat">
+          <div class="big-stat-label">TOTAL P&L</div>
+          <div class="big-stat-val green" id="v-total-pnl">+$0.00</div>
+        </div>
+        <div class="big-stat">
+          <div class="big-stat-label">DAYS LEFT</div>
+          <div class="big-stat-val neutral" id="v-days-left">100</div>
+        </div>
+        <div class="big-stat">
+          <div class="big-stat-label">TOTAL TRADES</div>
+          <div class="big-stat-val neutral" id="v-trade-count">0</div>
+        </div>
+      </div>
+
+      <div class="prog-wrap">
+        <div class="prog-meta">
+          <span>Progress to $26,022.87</span>
+          <span id="v-pct" style="color:var(--accent);font-weight:700;">0%</span>
+        </div>
+        <div class="prog-bar">
+          <div class="prog-fill" id="v-bar" style="width:0%"></div>
+        </div>
+      </div>
+
+      <div class="days-tracker" id="v-days-tracker">
+        <!-- generated by JS -->
+      </div>
     </div>
 
-    <div class="big-stats">
-      <div class="big-stat">
-        <div class="big-stat-label">START BALANCE</div>
-        <div class="big-stat-val neutral">$30.00</div>
-      </div>
-      <div class="big-stat">
-        <div class="big-stat-label">CURRENT BALANCE</div>
-        <div class="big-stat-val green" id="v-current-bal">$30.00</div>
-      </div>
-      <div class="big-stat">
-        <div class="big-stat-label">TARGET</div>
-        <div class="big-stat-val neutral">$100.00</div>
-      </div>
-      <div class="big-stat">
-        <div class="big-stat-label">TOTAL P&L</div>
-        <div class="big-stat-val green" id="v-total-pnl">+$0.00</div>
-      </div>
-      <div class="big-stat">
-        <div class="big-stat-label">DAYS LEFT</div>
-        <div class="big-stat-val neutral" id="v-days-left">5</div>
-      </div>
-      <div class="big-stat">
-        <div class="big-stat-label">TOTAL TRADES</div>
-        <div class="big-stat-val neutral" id="v-trade-count">0</div>
+    <!-- ── Toggle: Trade Log / Calendar ── -->
+    <div class="view-toggle-wrap">
+      <div class="section-label" style="margin-bottom:0;">Vantage · Trade History</div>
+      <div class="view-toggle">
+        <button class="toggle-btn active" id="btn-log" onclick="switchView('log')">⬚ &nbsp;Trade Log</button>
+        <button class="toggle-btn" id="btn-cal" onclick="switchView('cal')">▦ &nbsp;Calendar</button>
       </div>
     </div>
 
-    <div class="prog-wrap">
-      <div class="prog-meta">
-        <span>Progress to $100</span>
-        <span id="v-pct" style="color:var(--accent);font-weight:700;">0%</span>
+    <!-- Trade Log View -->
+    <div class="tradelog-view visible" id="view-log">
+      <div class="table-wrap" style="margin-bottom:3rem;">
+        <table class="trade-table">
+          <thead>
+            <tr>
+              <th>DATE</th>
+              <th>PAIR</th>
+              <th>TOTAL TRADES</th>
+              <th>P&L</th>
+              <th>P&L (%)</th>
+              <th>NOTE</th>
+            </tr>
+          </thead>
+          <tbody id="v-trade-log">
+            <tr>
+              <td colspan="6"
+                style="color:var(--muted);text-align:center;padding:2rem;font-size:0.75rem;">No trades logged yet.
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-      <div class="prog-bar"><div class="prog-fill" id="v-bar" style="width:0%"></div></div>
     </div>
 
-    <div class="days-tracker" id="v-days-tracker">
-      <!-- generated by JS -->
+    <!-- Calendar View -->
+    <div class="calendar-view" id="view-cal">
+      <div class="cal-outer">
+
+        <div class="cal-header">
+          <div class="cal-nav">
+            <button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
+            <div class="cal-month-title" id="cal-title">APRIL 2026</div>
+            <button class="cal-nav-btn" onclick="changeMonth(1)">›</button>
+          </div>
+          <div class="cal-legend">
+            <span><span class="legend-dot" style="background:var(--accent)"></span>PROFIT</span>
+            <span><span class="legend-dot" style="background:var(--danger)"></span>LOSS</span>
+          </div>
+        </div>
+
+        <div class="cal-weekdays">
+          <div class="cal-weekday">MON</div>
+          <div class="cal-weekday">TUE</div>
+          <div class="cal-weekday">WED</div>
+          <div class="cal-weekday">THU</div>
+          <div class="cal-weekday">FRI</div>
+          <div class="cal-weekday">SAT</div>
+          <div class="cal-weekday">SUN</div>
+        </div>
+
+        <div class="cal-days" id="cal-days"></div>
+
+        <!-- Monthly summary -->
+        <div class="cal-summary" id="cal-summary"></div>
+
+      </div>
     </div>
-  </div>
 
-  <!-- Trade Log -->
-  <div class="section-label">Trade Log · Vantage</div>
-  <div class="table-wrap" style="margin-bottom:3rem;">
-    <table class="trade-table">
-      <thead>
-        <tr>
-          <th>DATE</th>
-          <th>PAIR</th>
-          <th>TYPE</th>
-          <th>LOTS</th>
-          <th>ENTRY</th>
-          <th>EXIT</th>
-          <th>P&L</th>
-          <th>NOTE</th>
-        </tr>
-      </thead>
-      <tbody id="v-trade-log">
-        <tr><td colspan="8" style="color:var(--muted);text-align:center;padding:2rem;font-size:0.75rem;">No trades logged yet.</td></tr>
-      </tbody>
-    </table>
-  </div>
-</main>
+  </main>
 
-<footer>
-  <div>VANTAGE LIVE · $30 → $100 CHALLENGE · TRACKED DAILY</div>
-</footer>
+  <footer>
+    <div>VANTAGE LIVE · $30 → $100 CHALLENGE · TRACKED DAILY</div>
+  </footer>
+
+  <script>
+    // ──────────────────────────────────────────────
+    // TRADE DATA — add your rows here as objects
+    // ──────────────────────────────────────────────
+    const tradeData = [
+      { date: '2026-5-2', pair: 'XAUUSD', trades: 3, pnl: 2.14, pct: 7.13, note: 'Success' },
+      // Add entries above this line
+    ];
+
+    // ──────────────────────────────────────────────
+    // POPULATE TRADE LOG TABLE
+    // ──────────────────────────────────────────────
+    function renderTradeLog() {
+      const tbody = document.getElementById('v-trade-log');
+      if (!tradeData.length) return;
+
+      tbody.innerHTML = tradeData.map(t => {
+        const pos = t.pnl >= 0;
+        const sign = pos ? '+' : '';
+        return `<tr>
+          <td>${t.date}</td>
+          <td class="pair">${t.pair}</td>
+          <td>${t.trades}</td>
+          <td class="${pos ? 'profit' : 'loss'}">${sign}$${Math.abs(t.pnl).toFixed(2)}</td>
+          <td class="${pos ? 'profit' : 'loss'}">${sign}${t.pct.toFixed(2)}%</td>
+          <td style="color:var(--muted)">${t.note || '—'}</td>
+        </tr>`;
+      }).join('');
+    }
+
+    // ──────────────────────────────────────────────
+    // CALENDAR
+    // ──────────────────────────────────────────────
+    const MONTHS = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE',
+      'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
+
+    const today = new Date();
+    let calYear = today.getFullYear();
+    let calMonth = today.getMonth();
+
+    function buildCalendar() {
+      document.getElementById('cal-title').textContent = `${MONTHS[calMonth]} ${calYear}`;
+      const container = document.getElementById('cal-days');
+      container.innerHTML = '';
+
+      // Monday-first offset
+      const firstDay = new Date(calYear, calMonth, 1);
+      let offset = firstDay.getDay();
+      offset = offset === 0 ? 6 : offset - 1;
+
+      const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+
+      // Build lookup by day-of-month
+      const tradeMap = {};
+      tradeData.forEach(t => {
+        const d = new Date(t.date);
+        if (d.getFullYear() === calYear && d.getMonth() === calMonth) {
+          tradeMap[d.getDate()] = t;
+        }
+      });
+
+      // Empty leading cells
+      for (let i = 0; i < offset; i++) {
+        const el = document.createElement('div');
+        el.className = 'cal-day empty';
+        container.appendChild(el);
+      }
+
+      // Day cells
+      for (let d = 1; d <= daysInMonth; d++) {
+        const el = document.createElement('div');
+        el.className = 'cal-day';
+
+        const isToday = (d === today.getDate() && calMonth === today.getMonth() && calYear === today.getFullYear());
+        if (isToday) el.classList.add('today');
+
+        const t = tradeMap[d];
+        if (t) {
+          const pos = t.pnl >= 0;
+          el.classList.add(pos ? 'profit' : 'loss');
+          const sign = pos ? '+' : '';
+          el.innerHTML = `
+            <div class="day-num">${d}</div>
+            <div class="day-pnl">${sign}$${Math.abs(t.pnl).toFixed(2)}</div>
+            <div class="cal-tooltip">
+              <strong>${t.pair}</strong> · ${t.trades} trade${t.trades !== 1 ? 's' : ''}<br>
+              P&L: ${sign}$${Math.abs(t.pnl).toFixed(2)} &nbsp;(${sign}${t.pct.toFixed(2)}%)<br>
+              ${t.note || ''}
+            </div>`;
+        } else {
+          el.innerHTML = `<div class="day-num">${d}</div>`;
+        }
+        container.appendChild(el);
+      }
+
+      // Monthly summary row
+      renderMonthlySummary(tradeMap);
+    }
+
+    function renderMonthlySummary(tradeMap) {
+      const entries = Object.values(tradeMap);
+      const totalPnl = entries.reduce((s, t) => s + t.pnl, 0);
+      const totalTrades = entries.reduce((s, t) => s + t.trades, 0);
+      const winDays = entries.filter(t => t.pnl >= 0).length;
+      const lossDays = entries.filter(t => t.pnl < 0).length;
+      const sign = totalPnl >= 0 ? '+' : '';
+      const pnlColor = totalPnl >= 0 ? 'var(--accent)' : 'var(--danger)';
+
+      const summaryEl = document.getElementById('cal-summary');
+      if (!entries.length) {
+        summaryEl.innerHTML = '';
+        return;
+      }
+      summaryEl.innerHTML = `
+        <div class="cal-sum-box">
+          <div class="cal-sum-label">MONTH P&L</div>
+          <div class="cal-sum-val" style="color:${pnlColor}">${sign}$${Math.abs(totalPnl).toFixed(2)}</div>
+        </div>
+        <div class="cal-sum-box">
+          <div class="cal-sum-label">TOTAL TRADES</div>
+          <div class="cal-sum-val" style="color:var(--text)">${totalTrades}</div>
+        </div>
+        <div class="cal-sum-box">
+          <div class="cal-sum-label">WIN DAYS</div>
+          <div class="cal-sum-val" style="color:var(--accent)">${winDays}</div>
+        </div>
+        <div class="cal-sum-box">
+          <div class="cal-sum-label">LOSS DAYS</div>
+          <div class="cal-sum-val" style="color:var(--danger)">${lossDays}</div>
+        </div>`;
+    }
+
+    function changeMonth(dir) {
+      calMonth += dir;
+      if (calMonth < 0) { calMonth = 11; calYear--; }
+      if (calMonth > 11) { calMonth = 0; calYear++; }
+      buildCalendar();
+    }
+
+    // ──────────────────────────────────────────────
+    // TOGGLE VIEWS
+    // ──────────────────────────────────────────────
+    function switchView(v) {
+      const isLog = v === 'log';
+      document.getElementById('view-log').classList.toggle('visible', isLog);
+      document.getElementById('view-cal').classList.toggle('visible', !isLog);
+      document.getElementById('btn-log').classList.toggle('active', isLog);
+      document.getElementById('btn-cal').classList.toggle('active', !isLog);
+    }
+
+    // ── INIT ──
+    renderTradeLog();
+    buildCalendar();
+    switchView('cal');
+  </script>
 
 </body>
 </html>
