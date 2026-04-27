@@ -443,7 +443,7 @@
     const currentBalance = startBalance + totalPnl;
     const pct = ((currentBalance - startBalance) / (target - startBalance) * 100).toFixed(2);
     document.getElementById('start_balance').textContent = '$' + startBalance.toFixed(2);
-    document.getElementById('v-target-bal').textContent = '$' + target.toFixed(2);
+    document.getElementById('v-target-bal').textContent = '$' + target.toFixed(1);
     document.getElementById('v-days-left').textContent = daysLeft;
     document.getElementById('v-current-bal').textContent = '$' + currentBalance.toFixed(2);
     document.getElementById('v-total-pnl').textContent = (totalPnl >= 0 ? '+' : '') + '$' + totalPnl.toFixed(2);

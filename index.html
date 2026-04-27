@@ -1,148 +1,103 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>doc.trades — Live Progress</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="styles.css">
+  <script src="live_accounts_tradeData.js"></script>
+  <style>
+    a{
+      color: inherit;
+      text-decoration: none;
+    }
+  </style>
 </head>
+
 <body>
 
-<header>
-  <div class="logo">doc <span>trades</span></div>
-  <nav>
-    <a href="index.html" class="active">Home</a>
-    <a href="live_accounts.html">Live</a>
-    <a href="propfirm.html">PropFirm</a>
-  </nav>
-</header>
+  <header>
+    <div class="logo">doc <span>trades</span></div>
+    <nav>
+      <a href="index.html" class="active">Home</a>
+      <a href="live_accounts.html">Live</a>
+      <a href="propfirm.html">PropFirm</a>
+    </nav>
+  </header>
 
-<main>
-  <!-- <div class="hero">
-    <div class="hero-tag"><span class="pulse-dot"></span>LIVE TRADING PROGRESS</div>
-    <h1>GRIND.<br/><span class="highlight">GROW.</span><br/>REPEAT.</h1>
-    <p>Real trades. Real stakes. Following my journey from retail trader to funded pro — every challenge, every payout, every loss.</p>
-  </div> -->
+  <main>
 
-  <!-- Active Challenges -->
-  <div class="section-label">Active Challenges</div>
-  <div class="challenges-grid">
+
+    <!-- Active Challenges -->
+    <div class="section-label">Active Challenges</div>
 
     <!-- Vantage Live Challenge -->
-    <!-- <div class="challenge-card">
-      <div class="card-header">
-        <div class="card-platform">Vantage · Live Account</div>
-        <div class="card-status status-live">● LIVE</div>
-      </div>
-      <div class="card-title">$30 → $100</div>
-      <div class="card-subtitle">Turning $30 into $100 in 5 days</div>
+    <a class="nav-card" style="padding: 0px; margin-bottom: 20px; " href="/live_accounts.html">
+      <div class="account-hero" style="margin: 0px;">
+        <div class="account-hero-header">
+          <div class="account-name">7% Profit per day for 100 days
+            <div class="card-subtitle">Vantage $30 Live Account</div>
+          </div>
+          <div class="account-badge" id="v-status-badge">● On progress</div>
+        </div>
 
-      <div class="progress-wrap">
-        <div class="progress-meta">
-          <span>Balance</span>
-          <span class="value" id="vantage-bal">$30.00</span>
-        </div>
-        <div class="progress-bar">
-          <div class="progress-fill" id="vantage-bar" style="width: 0%"></div>
-        </div>
-        <div class="progress-meta" style="margin-top:0.4rem;">
-          <span>Target: $100</span>
-          <span class="value" id="vantage-pct">0%</span>
-        </div>
-      </div>
+        <div class="prog-wrap">
+          <div class="prog-meta" >
+            <p id="current_balance">Current Balance</p>
+            <span id="v-pct" style="color:var(--accent);font-weight:700;">0%</span>
 
-      <div class="stats-row">
-        <div class="stat-box">
-          <div class="stat-label">P&L TODAY</div>
-          <div class="stat-value green" id="vantage-pnl">+$0.00</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">DAYS LEFT</div>
-          <div class="stat-value" id="vantage-days">5</div>
-        </div>
-      </div>
+          </div>
 
-      <div class="days-row" id="vantage-days-row">
-        <div class="day-box"><div class="day-n">D1</div><div class="day-icon">⬜</div></div>
-        <div class="day-box"><div class="day-n">D2</div><div class="day-icon">⬜</div></div>
-        <div class="day-box"><div class="day-n">D3</div><div class="day-icon">⬜</div></div>
-        <div class="day-box"><div class="day-n">D4</div><div class="day-icon">⬜</div></div>
-        <div class="day-box"><div class="day-n">D5</div><div class="day-icon">⬜</div></div>
-      </div>
-    </div> -->
-
-    <!-- GOAT PropFirm Challenge -->
-    <!-- <div class="challenge-card gold">
-      <div class="card-header">
-        <div class="card-platform">GOAT Funded · 5K Eval</div>
-        <div class="card-status status-gold">● ACTIVE</div>
-      </div>
-      <div class="card-title">PROPFIRM EVAL</div>
-      <div class="card-subtitle">Passing $5,000 evaluation in 10 days</div>
-
-      <div class="progress-wrap">
-        <div class="progress-meta">
-          <span>Profit Target</span>
-          <span class="value" id="goat-bal">$0.00</span>
+          <div class="prog-bar">
+            <div class="prog-fill" id="v-bar" style="width:0%"></div>
+          </div>
+          <div class="prog-meta" style="margin-top:0.4rem;">
+            <p id="target_balance">Target Balance</p>
+          </div>
         </div>
-        <div class="progress-bar">
-          <div class="progress-fill gold" id="goat-bar" style="width: 0%"></div>
-        </div>
-        <div class="progress-meta" style="margin-top:0.4rem;">
-          <span>Target: $500 (10%)</span>
-          <span class="value" id="goat-pct">0%</span>
-        </div>
-      </div>
 
-      <div class="stats-row">
-        <div class="stat-box">
-          <div class="stat-label">P&L TODAY</div>
-          <div class="stat-value gold" id="goat-pnl">+$0.00</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">DAYS LEFT</div>
-          <div class="stat-value" id="goat-days">10</div>
-        </div>
-      </div>
 
-      <div class="days-row" id="goat-days-row">
-        <div class="day-box"><div class="day-n">D1</div><div class="day-icon">⬜</div></div>
-        <div class="day-box"><div class="day-n">D2</div><div class="day-icon">⬜</div></div>
-        <div class="day-box"><div class="day-n">D3</div><div class="day-icon">⬜</div></div>
-        <div class="day-box"><div class="day-n">D4</div><div class="day-icon">⬜</div></div>
-        <div class="day-box"><div class="day-n">D5</div><div class="day-icon">⬜</div></div>
-        <div class="day-box"><div class="day-n">D6</div><div class="day-icon">⬜</div></div>
-        <div class="day-box"><div class="day-n">D7</div><div class="day-icon">⬜</div></div>
-        <div class="day-box"><div class="day-n">D8</div><div class="day-icon">⬜</div></div>
-        <div class="day-box"><div class="day-n">D9</div><div class="day-icon">⬜</div></div>
-        <div class="day-box"><div class="day-n">D10</div><div class="day-icon">⬜</div></div>
       </div>
-    </div> -->
-  </div>
-
-  <!-- Quick Nav -->
-  <div class="section-label">Explore</div>
-  <div class="links-row">
-    <a class="nav-card" href="live_accounts.html">
-      <div class="nav-card-icon">📈</div>
-      <div class="nav-card-title">LIVE ACCOUNTS</div>
-      <div class="nav-card-desc">Track real money challenges, P&L history, and account growth in real-time.</div>
-      <div class="nav-card-arrow">VIEW DETAILS →</div>
     </a>
-    <a class="nav-card" href="propfirm.html">
-      <div class="nav-card-icon">🏆</div>
-      <div class="nav-card-title">PROP FIRM</div>
-      <div class="nav-card-desc">Eval progress, payouts received, and challenges failed — full transparency.</div>
-      <div class="nav-card-arrow">VIEW DETAILS →</div>
-    </a>
-  </div>
-</main>
 
-<footer>
-  <div>BUILT IN PUBLIC · EVERY TRADE DOCUMENTED · NO SIGNAL SELLING</div>
-</footer>
+    
+    <!-- Quick Nav -->
+    <div class="section-label">Explore</div>
+    <div class="links-row">
+      <a class="nav-card" href="live_accounts.html">
+        <div class="nav-card-icon">📈</div>
+        <div class="nav-card-title">LIVE ACCOUNTS</div>
+        <div class="nav-card-desc">Track real money challenges, P&L history, and account growth in real-time.</div>
+        <div class="nav-card-arrow">VIEW DETAILS →</div>
+      </a>
+      <a class="nav-card" href="propfirm.html">
+        <div class="nav-card-icon">🏆</div>
+        <div class="nav-card-title">PROP FIRM</div>
+        <div class="nav-card-desc">Eval progress, payouts received, and challenges failed — full transparency.</div>
+        <div class="nav-card-arrow">VIEW DETAILS →</div>
+      </a>
+    </div>
+  </main>
 
+  <footer>
+    <div>BUILT IN PUBLIC · EVERY TRADE DOCUMENTED · NO SIGNAL SELLING</div>
+  </footer>
+  <script>
+    //INIT STATS
+    const totalPnl = tradeData.reduce((s, t) => s + t.pnl, 0);
+    const currentBalance = startBalance + totalPnl;
+    const pct = ((currentBalance - startBalance) / (target - startBalance) * 100).toFixed(2);
+    document.getElementById('target_balance').textContent = 'Target Balance - $' + target.toFixed(2);
+    document.getElementById('current_balance').textContent = 'Current Balance - $' + currentBalance.toFixed(2);
+    document.getElementById('v-pct').textContent = pct + '%';
+    document.getElementById('v-bar').style.width = Math.min(pct, 100) + '%';
+
+  </script>
 </body>
+
 </html>
