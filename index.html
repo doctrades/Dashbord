@@ -35,7 +35,7 @@
     <div class="section-label">Active Challenges</div>
 
     <!-- Vantage Live Challenge -->
-    <script src="1.js"></script>
+    <!-- <script src="1.js"></script>
     <a class="nav-card" style="padding: 0px; margin-bottom: 20px; " href="1.html">
       <div class="account-hero" style="margin: 0px;">
         <div class="account-hero-header">
@@ -43,6 +43,50 @@
             <div class="card-subtitle">Vantage Live Account</div>
           </div>
           <div class="account-badge" id="v-status-badge">● On progress</div>
+        </div>
+
+        <div class="prog-wrap">
+          <div class="prog-meta">
+            <p id="current_balance">Current Balance</p>
+            <span id="v-pct" style="color:var(--accent);font-weight:700;">0%</span>
+
+          </div>
+
+          <div class="prog-bar">
+            <div class="prog-fill" id="v-bar" style="width:0%"></div>
+          </div>
+          <div class="prog-meta" style="margin-top:0.4rem;">
+            <p id="target_balance">Target Balance</p>
+          </div>
+        </div>
+
+
+      </div>
+    </a> -->
+
+    <script>
+      // ──────────────────────────────────────────────
+      // TRADE DATA — add your rows here as objects
+      // ──────────────────────────────────────────────
+
+      const startBalance = 5000;
+      const target = 5400;
+
+      var daysCompleted = 1;
+      const tradeData = [
+        { date: '2026-5-1', pair: 'XAUUSD', trades: 3, pnl: 132.54, pct: 16.7, note: 'Failed' },
+
+        //   Add entries above this line
+      ];
+
+    </script>
+    <a class="nav-card" style="padding: 0px; margin-bottom: 20px; ">
+      <div class="account-hero challenge-card gold" style="margin: 0px;">
+        <div class="account-hero-header">
+          <div class="account-name">GFT $5k Challenge
+            <div class="card-subtitle">Goat Funded Trader</div>
+          </div>
+          <div class="account-badge" id="v-status-badge">● PHASE 1</div>
         </div>
 
         <div class="prog-wrap">
