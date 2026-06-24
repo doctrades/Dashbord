@@ -1,23 +1,303 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>doc.trades — Live Progress</title>
+  <title>doc.trades — Accounts</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap"
-    rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
-    a {
-      color: inherit;
+    :root {
+      --bg: #090c10;
+      --surface: #0f141a;
+      --card: #141b24;
+      --border: #1e2a38;
+      --accent: #00e5a0;
+      --accent2: #f7b731;
+      --danger: #ff4757;
+      --text: #e8edf3;
+      --muted: #5a6a7e;
+      --mono: 'Space Mono', monospace;
+      --display: 'Bebas Neue', sans-serif;
+      --body: 'DM Sans', sans-serif;
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--body);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,229,160,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,229,160,.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(9,12,16,.9);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      height: 60px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo { font-family: var(--display); font-size: 1.6rem; letter-spacing: 3px; color: var(--accent); }
+    .logo span { color: var(--text); }
+    nav { display: flex; gap: .25rem; }
+    nav a {
+      color: var(--muted);
       text-decoration: none;
+      font-family: var(--mono);
+      font-size: .7rem;
+      letter-spacing: 1px;
+      padding: .4rem .8rem;
+      border-radius: 4px;
+      transition: all .2s;
+      text-transform: uppercase;
+    }
+    nav a:hover, nav a.active { color: var(--accent); background: rgba(0,229,160,.08); }
+    nav a.active { border: 1px solid rgba(0,229,160,.3); }
+
+    main {
+      position: relative; z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 3rem 2rem 5rem;
+    }
+
+    .summary-bar {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+      animation: fadeUp .5s ease both;
+    }
+    .sum-box {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.1rem 1.3rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .sum-box::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent), transparent);
+    }
+    .sum-label {
+      font-family: var(--mono);
+      font-size: .58rem;
+      color: var(--muted);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: .45rem;
+    }
+    .sum-val {
+      font-family: var(--mono);
+      font-size: 1.35rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .sum-val.green { color: var(--accent); }
+    .sum-val.red   { color: var(--danger); }
+    .sum-val.gold  { color: var(--accent2); }
+
+    .section-label {
+      font-family: var(--mono);
+      font-size: .65rem;
+      letter-spacing: 3px;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+    }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+    .section-sub {
+      font-size: .55rem;
+      color: var(--muted);
+      letter-spacing: 1px;
+      font-family: var(--mono);
+      margin-left: .5rem;
+      text-transform: none;
+      opacity: .7;
+    }
+
+    .filter-row {
+      display: flex;
+      gap: .4rem;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+    }
+    .filter-btn {
+      font-family: var(--mono);
+      font-size: .6rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: .35rem .85rem;
+      border-radius: 5px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      cursor: pointer;
+      transition: all .2s;
+    }
+    .filter-btn:hover { color: var(--text); border-color: var(--muted); }
+    .filter-btn.active { color: var(--accent); border-color: rgba(0,229,160,.4); background: rgba(0,229,160,.06); }
+
+    .accounts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 1.25rem;
+      margin-bottom: 3rem;
+    }
+
+    .acc-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.6rem;
+      position: relative;
+      overflow: hidden;
+      text-decoration: none;
+      color: var(--text);
+      display: block;
+      transition: transform .2s, border-color .2s, box-shadow .2s;
+      animation: fadeUp .5s ease both;
+    }
+    .acc-card:hover { transform: translateY(-3px); box-shadow: 0 8px 32px rgba(0,0,0,.3); }
+    .acc-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+
+    /* Reserve cards get a subtle dimmed look */
+    .acc-card.is-reserve { opacity: .75; }
+    .acc-card.is-reserve:hover { opacity: 1; }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 1.1rem;
+      gap: .75rem;
+    }
+    .card-name { font-family: var(--display); font-size: 1.5rem; letter-spacing: 2px; line-height: 1.1; }
+    .card-firm { font-family: var(--mono); font-size: .58rem; color: var(--muted); letter-spacing: 1px; margin-top: .25rem; }
+
+    .status-badge {
+      font-family: var(--mono);
+      font-size: .58rem;
+      letter-spacing: 1px;
+      padding: .3rem .75rem;
+      border-radius: 4px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .status-active  { color: var(--accent);  background: rgba(0,229,160,.1);   border: 1px solid rgba(0,229,160,.3); }
+    .status-reserve { color: #64748b;         background: rgba(100,116,139,.1); border: 1px solid rgba(100,116,139,.35); }
+    .status-passed  { color: var(--accent2);  background: rgba(247,183,49,.1);  border: 1px solid rgba(247,183,49,.3); }
+    .status-failed  { color: var(--danger);   background: rgba(255,71,87,.1);   border: 1px solid rgba(255,71,87,.3); }
+    .status-funded  { color: #a78bfa;         background: rgba(167,139,250,.1); border: 1px solid rgba(167,139,250,.3); }
+
+    .prog-section { margin-bottom: 1.2rem; }
+    .prog-row {
+      display: flex;
+      justify-content: space-between;
+      font-family: var(--mono);
+      font-size: .62rem;
+      color: var(--muted);
+      margin-bottom: .45rem;
+    }
+    .prog-row .pct { font-weight: 700; }
+    .prog-track { height: 7px; background: var(--border); border-radius: 4px; overflow: hidden; margin-bottom: .4rem; }
+    .prog-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 1s ease;
+      position: relative;
+    }
+    .prog-fill::after {
+      content: '';
+      position: absolute; top: 0; right: 0;
+      width: 20px; height: 100%;
+      background: rgba(255,255,255,.25);
+      filter: blur(4px);
+      animation: shimmer 2s ease-in-out infinite;
+    }
+    @keyframes shimmer { 0%,100%{opacity:0} 50%{opacity:1} }
+
+    .bal-row { display: flex; justify-content: space-between; font-family: var(--mono); font-size: .6rem; color: var(--muted); }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: .6rem;
+      margin-bottom: 1.1rem;
+    }
+    .stat-box { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: .6rem .75rem; }
+    .stat-lbl { font-family: var(--mono); font-size: .52rem; color: var(--muted); letter-spacing: 1px; margin-bottom: .3rem; text-transform: uppercase; }
+    .stat-val { font-family: var(--mono); font-size: .85rem; font-weight: 700; color: var(--text); }
+    .stat-val.green { color: var(--accent); }
+    .stat-val.red   { color: var(--danger); }
+    .stat-val.gold  { color: var(--accent2); }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: .75rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+    .acc-id { font-family: var(--mono); font-size: .55rem; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; }
+    .acc-id span { color: var(--text); }
+    .card-note { font-size: .7rem; color: var(--muted); font-style: italic; max-width: 60%; text-align: right; line-height: 1.4; }
+
+    .phase-dots { display: flex; gap: 4px; align-items: center; margin-bottom: .9rem; }
+    .phase-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); border: 1px solid var(--border); }
+    .phase-dot.done    { background: var(--accent); border-color: var(--accent); }
+    .phase-dot.current { background: transparent; border-color: var(--accent); box-shadow: 0 0 6px var(--accent); }
+    .phase-label { font-family: var(--mono); font-size: .55rem; color: var(--muted); letter-spacing: 1px; margin-left: 6px; }
+
+    footer {
+      position: relative; z-index: 1;
+      text-align: center;
+      padding: 2rem;
+      border-top: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: .65rem;
+      color: var(--muted);
+      letter-spacing: 1px;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 600px) {
+      header { padding: 0 1rem; }
+      main   { padding: 1.5rem 1rem 4rem; }
+      .accounts-grid { grid-template-columns: 1fr; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .card-note { display: none; }
     }
   </style>
 </head>
-
 <body>
 
   <header>
@@ -29,105 +309,231 @@
   </header>
 
   <main>
+    <div class="summary-bar" id="summary-bar"></div>
+    <div class="filter-row"  id="filter-row"></div>
 
+    <div class="section-label" id="label-active"  style="display:none">Active Accounts</div>
+    <div class="accounts-grid" id="grid-active"></div>
 
-    <!-- Active Challenges -->
-    <div class="section-label">Active Challenges</div>
+    <div class="section-label" id="label-reserve" style="display:none">
+      Reserve Accounts <span class="section-sub">— on standby · deploy when needed</span>
+    </div>
+    <div class="accounts-grid" id="grid-reserve"></div>
 
-    <!-- Vantage Live Challenge -->
-    <!-- <script src="1.js"></script>
-    <a class="nav-card" style="padding: 0px; margin-bottom: 20px; " href="1.html">
-      <div class="account-hero" style="margin: 0px;">
-        <div class="account-hero-header">
-          <div class="account-name">Turning $30 to $100
-            <div class="card-subtitle">Vantage Live Account</div>
-          </div>
-          <div class="account-badge" id="v-status-badge">● On progress</div>
-        </div>
+    <div class="section-label" id="label-passed"  style="display:none">Passed / Funded</div>
+    <div class="accounts-grid" id="grid-passed"></div>
 
-        <div class="prog-wrap">
-          <div class="prog-meta">
-            <p id="current_balance">Current Balance</p>
-            <span id="v-pct" style="color:var(--accent);font-weight:700;">0%</span>
-
-          </div>
-
-          <div class="prog-bar">
-            <div class="prog-fill" id="v-bar" style="width:0%"></div>
-          </div>
-          <div class="prog-meta" style="margin-top:0.4rem;">
-            <p id="target_balance">Target Balance</p>
-          </div>
-        </div>
-
-
-      </div>
-    </a> -->
-
-    <script>
-      // ──────────────────────────────────────────────
-      // TRADE DATA — add your rows here as objects
-      // ──────────────────────────────────────────────
-
-      const startBalance = 5000;
-      const target = 5300;
-
-      var daysCompleted = 1; // Update this as you complete days
-      const tradeData = [
-        { date: '2026-6-1', pair: 'XAUUSD', trades: 7, pnl: 99.73, pct: 1.99, note: 'Sucess' },
-
-        //   Add entries above this line
-      ];
-
-    </script>
-    <a class="nav-card" style="padding: 0px; margin-bottom: 20px; " href="https://trader.blueguardian.com/metrics/6a1c1c1113978daeb5c1b489">
-      <div class="account-hero challenge-card blueBG" style="margin: 0px;">
-        <div class="account-hero-header">
-          <div class="account-name">Blue Guardian $5k Challenge 
-            <div class="card-subtitle">Blue Guardian · 3 Step</div>
-          </div>
-          <div class="account-badge" id="v-status-badge">● PHASE 1</div>
-        </div>
-
-        <div class="prog-wrap">
-          <div class="prog-meta">
-            <p id="current_balance">Current Balance</p>
-            <span id="v-pct" style="color:var(--accent);font-weight:700;">0%</span>
-
-          </div>
-
-          <div class="prog-bar">
-            <div class="prog-fill" id="v-bar" style="width:0%"></div>
-          </div>
-          <div class="prog-meta" style="margin-top:0.4rem;">
-            <p id="target_balance">Target Balance</p>
-          </div>
-        </div>
-
-
-      </div>
-    </a>
-
-
-    <!-- Quick Nav -->
-    <div class="section-label">Completed Challenges</div>
-
+    <div class="section-label" id="label-failed"  style="display:none">Failed / Closed</div>
+    <div class="accounts-grid" id="grid-failed"></div>
   </main>
 
   <footer>
     <div>BUILT IN PUBLIC · EVERY TRADE DOCUMENTED · NO SIGNAL SELLING</div>
   </footer>
-  <script>
-    //INIT STATS
-    const totalPnl = tradeData.reduce((s, t) => s + t.pnl, 0);
-    const currentBalance = startBalance + totalPnl;
-    const pct = ((currentBalance - startBalance) / (target - startBalance) * 100).toFixed(2);
-    document.getElementById('target_balance').textContent = 'Target Balance - $' + target.toFixed(2);
-    document.getElementById('current_balance').textContent = 'Current Balance - $' + currentBalance.toFixed(2);
-    document.getElementById('v-pct').textContent = pct + '%';
-    document.getElementById('v-bar').style.width = Math.min(pct, 100) + '%';
 
+  <script src="accounts.js"></script>
+
+  <script>
+    const fmt     = n => '$' + n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const pct     = (a,b) => ((a-b)/b*100).toFixed(2) + '%';
+    const progPct = (cur,init,tgt) => Math.min(Math.max((cur-init)/(tgt-init)*100, 0), 100).toFixed(1);
+
+    // FIX 3: UTC-safe — counts calendar days from startDate to today,
+    // regardless of timezone and whether any trades were taken
+    const daysSince = d => {
+      const [y,m,day] = d.split('-').map(Number);
+      const start = Date.UTC(y, m-1, day);
+      const today = Date.UTC(new Date().getFullYear(), new Date().getMonth(), new Date().getDate());
+      return Math.max(0, Math.floor((today - start) / 86400000));
+    };
+
+    const STATUS_LABELS = { active:'● ACTIVE', reserve:'◈ RESERVE', passed:'✓ PASSED', failed:'✗ FAILED', funded:'★ FUNDED' };
+    const STATUS_CLASS  = { active:'status-active', reserve:'status-reserve', passed:'status-passed', failed:'status-failed', funded:'status-funded' };
+
+    // ── Summary bar ────────────────────────────────────────
+    function buildSummary() {
+      const total     = ACCOUNTS.length;
+      const nActive   = ACCOUNTS.filter(a => a.status === 'active').length;
+      const nReserve  = ACCOUNTS.filter(a => a.status === 'reserve').length;
+      const nFailed   = ACCOUNTS.filter(a => a.status === 'failed').length;
+      const live      = ACCOUNTS.filter(a => a.status !== 'failed');
+      const totalSize = live.reduce((s,a) => s + a.accountSize, 0);
+      const totalBal  = live.reduce((s,a) => s + a.currentBalance, 0);
+      const totalPnl  = totalBal - totalSize;
+
+      const items = [
+        { label: 'Total Accounts',     val: total,                                                cls: '' },
+        { label: 'Active',             val: nActive,                                              cls: 'green' },
+        { label: 'Reserve',            val: nReserve,                                             cls: '' },
+        { label: 'Capital Under Mgmt', val: fmt(totalSize),                                       cls: '' },
+        { label: 'Current Equity',     val: fmt(totalBal),     cls: totalBal >= totalSize ? 'green' : 'red' },
+        { label: 'Total P&L',          val: (totalPnl >= 0 ? '+' : '') + fmt(totalPnl), cls: totalPnl >= 0 ? 'green' : 'red' },
+        { label: 'Failed',             val: nFailed,                                              cls: nFailed > 0 ? 'red' : '' },
+      ];
+
+      document.getElementById('summary-bar').innerHTML = items.map(i => `
+        <div class="sum-box">
+          <div class="sum-label">${i.label}</div>
+          <div class="sum-val ${i.cls}">${i.val}</div>
+        </div>`).join('');
+    }
+
+    // ── Filter buttons ─────────────────────────────────────
+    let currentFilter = 'all';
+    function buildFilters() {
+      const firms = ['all', ...new Set(ACCOUNTS.map(a => a.propFirm))];
+      document.getElementById('filter-row').innerHTML = firms.map(f => `
+        <button class="filter-btn${f==='all'?' active':''}" data-firm="${f}">
+          ${f === 'all' ? 'All Accounts' : f}
+        </button>`).join('');
+
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          currentFilter = btn.dataset.firm;
+          document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          renderCards();
+        });
+      });
+    }
+
+    // ── Build one card ─────────────────────────────────────
+    function buildCard(acc) {
+      const style  = STYLE_MAP[acc.style] || STYLE_MAP.green;
+      const pnl    = acc.currentBalance - acc.initialBalance;
+      const pnlPct = pct(acc.currentBalance, acc.initialBalance);
+      const prog   = progPct(acc.currentBalance, acc.initialBalance, acc.targetBalance);
+      const days   = daysSince(acc.startDate);   // always from startDate, no trade check
+      const remain = acc.targetBalance - acc.currentBalance;
+
+      const phaseNum = parseInt((acc.phase || 'PHASE 1').replace(/\D/g,'')) || 1;
+      let dots = '';
+      for (let i = 1; i <= acc.totalPhases; i++) {
+        if      (i < phaseNum)  dots += '<div class="phase-dot done"></div>';
+        else if (i === phaseNum) dots += '<div class="phase-dot current"></div>';
+        else                    dots += '<div class="phase-dot"></div>';
+      }
+
+      const rgb = hexToRgb(style.accent);
+      return `
+        <a class="acc-card${acc.status==='reserve'?' is-reserve':''}"
+           href="${acc.dashboardUrl || '#'}" target="_blank"
+           style="border-color:rgba(${rgb},.18);"
+           onmouseover="this.style.borderColor='rgba(${rgb},.45)';this.style.boxShadow='0 8px 32px ${style.glow}'"
+           onmouseout="this.style.borderColor='rgba(${rgb},.18)';this.style.boxShadow=''">
+
+          <div style="position:absolute;top:0;left:0;right:0;height:3px;background:${style.bar}"></div>
+
+          <div class="card-top">
+            <div>
+              <div class="card-name">${acc.accountName}</div>
+              <div class="card-firm">${acc.propFirm} · ${acc.accountSize>=1000?'$'+(acc.accountSize/1000)+'K':'$'+acc.accountSize} · ${acc.totalPhases}-Step</div>
+            </div>
+            <div class="status-badge ${STATUS_CLASS[acc.status]}">${STATUS_LABELS[acc.status]}</div>
+          </div>
+
+          <div class="phase-dots">
+            ${dots}
+            <span class="phase-label">${acc.phase}</span>
+          </div>
+
+          <div class="prog-section">
+            <div class="prog-row">
+              <span>Progress to target</span>
+              <span class="pct" style="color:${style.accent}">${prog}%</span>
+            </div>
+            <div class="prog-track">
+              <div class="prog-fill" style="width:${prog}%;background:${style.bar}"></div>
+            </div>
+            <div class="bal-row">
+              <span>${fmt(acc.currentBalance)}</span>
+              <span>Target ${fmt(acc.targetBalance)}</span>
+            </div>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-box">
+              <div class="stat-lbl">P&amp;L</div>
+              <div class="stat-val ${pnl>=0?'green':'red'}">${pnl>=0?'+':''}${fmt(pnl)}</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-lbl">Return</div>
+              <div class="stat-val ${pnl>=0?'green':'red'}">${pnl>=0?'+':''}${pnlPct}</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-lbl">Remaining</div>
+              <div class="stat-val" style="color:${style.accent}">${remain>0?fmt(remain):'—'}</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-lbl">Max DD</div>
+              <div class="stat-val">${fmt(acc.maxDrawdown)}</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-lbl">Days Active</div>
+              <div class="stat-val">${days}d</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-lbl">Started</div>
+              <div class="stat-val" style="font-size:.68rem">${acc.startDate}</div>
+            </div>
+          </div>
+
+          <div class="card-footer">
+            <div class="acc-id">ID: <span>${acc.accountNumber}</span></div>
+            <div class="card-note">${acc.note||''}</div>
+          </div>
+        </a>`;
+    }
+
+    // ── Render all cards ───────────────────────────────────
+    function renderCards() {
+      const filtered = currentFilter === 'all'
+        ? ACCOUNTS
+        : ACCOUNTS.filter(a => a.propFirm === currentFilter);
+
+      // FIX 2: bucket by status
+      const groups = { active:[], reserve:[], passed:[], failed:[] };
+      filtered.forEach(a => {
+        if      (a.status === 'active')                          groups.active.push(a);
+        else if (a.status === 'reserve')                         groups.reserve.push(a);
+        else if (a.status === 'funded' || a.status === 'passed') groups.passed.push(a);
+        else                                                      groups.failed.push(a);
+      });
+
+      // FIX 1: sort each bucket by P&L descending (highest profit first)
+      Object.values(groups).forEach(g =>
+        g.sort((a,b) => (b.currentBalance - b.initialBalance) - (a.currentBalance - a.initialBalance))
+      );
+
+      ['active','reserve','passed','failed'].forEach(g => {
+        const grid  = document.getElementById('grid-'  + g);
+        const label = document.getElementById('label-' + g);
+        if (groups[g].length) {
+          grid.innerHTML = groups[g].map((a,i) =>
+            buildCard(a).replace(
+              'animation: fadeUp .5s ease both',
+              `animation: fadeUp .5s ease ${i*0.06}s both`
+            )
+          ).join('');
+          label.style.display = '';
+        } else {
+          grid.innerHTML  = '';
+          label.style.display = 'none';
+        }
+      });
+    }
+
+    function hexToRgb(hex) {
+      return [
+        parseInt(hex.slice(1,3),16),
+        parseInt(hex.slice(3,5),16),
+        parseInt(hex.slice(5,7),16)
+      ].join(',');
+    }
+
+    buildSummary();
+    buildFilters();
+    renderCards();
   </script>
 </body>
-
 </html>
