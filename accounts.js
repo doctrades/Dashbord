@@ -158,7 +158,7 @@ const ACCOUNTS = [
     accountSize: 5000,
     initialBalance: 5000,
     currentBalance: 5000,
-    targetBalance: 5000,        // phase profit target
+    targetBalance: 5300,        // phase profit target
     maxDrawdown: 400,           // max allowed drawdown ($)
     phase: 'PHASE 1',
     totalPhases: 3,
