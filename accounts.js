@@ -103,14 +103,14 @@ const ACCOUNTS = [
     propFirm: 'Blue Guardian',
     accountSize: 10000,
     initialBalance: 10000,
-    currentBalance: 10574.76,
+    currentBalance: 10000,
     targetBalance: 10600,       // phase profit target
     maxDrawdown: 800,           // max allowed drawdown ($)
-    phase: 'PHASE 1',
+    phase: 'PHASE 2',
     totalPhases: 3,
-    startDate: '2026-06-22',
-    accountNumber: '238502',
-    dashboardUrl: 'https://trader.blueguardian.com/metrics/6a3979f79286f6b0ebda5dda',
+    startDate: '2026-06-26',
+    accountNumber: '240207',
+    dashboardUrl: 'https://trader.blueguardian.com/metrics/6a3e93308c6d38bf79d67a4a',
     status: 'active',           // active | passed | failed | funded
     style: 'blue',
     note: 'namanrajsingh2006@gmail.com NYSE Account',
@@ -121,7 +121,7 @@ const ACCOUNTS = [
     propFirm: 'Blue Guardian',
     accountSize: 5000,
     initialBalance: 5000,
-    currentBalance: 5158.49,
+    currentBalance: 5096.49,
     targetBalance: 5300,        // phase profit target
     maxDrawdown: 400,           // max allowed drawdown ($)
     phase: 'PHASE 1',
@@ -175,7 +175,7 @@ const ACCOUNTS = [
     propFirm: 'GFT',
     accountSize: 5000,
     initialBalance: 5000,
-    currentBalance: 5071,
+    currentBalance: 4949.31,
     targetBalance: 5400,
     maxDrawdown: 400,
     phase: 'PHASE 1',
