@@ -147,7 +147,7 @@ const ACCOUNTS = [
     startDate: '2026-06-24',
     accountNumber: '238926',
     dashboardUrl: 'https://trader.blueguardian.com/metrics/6a3aea8f84372ffceb979446',
-    status: 'reserve',           // active | passed | failed | funded
+    status: 'active',           // active | passed | failed | funded
     style: 'blue',
     note: 'trade.namanrajsingh@gmail.com ',
   },
