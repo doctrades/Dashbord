@@ -103,7 +103,7 @@ const ACCOUNTS = [
     propFirm: 'Blue Guardian',
     accountSize: 10000,
     initialBalance: 10000,
-    currentBalance: 10000,
+    currentBalance: 10682.62,
     targetBalance: 10600,       // phase profit target
     maxDrawdown: 800,           // max allowed drawdown ($)
     phase: 'PHASE 2',
@@ -175,7 +175,7 @@ const ACCOUNTS = [
     propFirm: 'GFT',
     accountSize: 5000,
     initialBalance: 5000,
-    currentBalance: 4949.31,
+    currentBalance: 4783.08,
     targetBalance: 5400,
     maxDrawdown: 400,
     phase: 'PHASE 1',
