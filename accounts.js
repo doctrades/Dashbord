@@ -116,6 +116,24 @@ const ACCOUNTS = [
     note: 'namanrajsingh2006@gmail.com NYSE Account',
   },
   {
+    id: 'BG-10K-002',
+    accountName: 'Blue Guardian $10K',
+    propFirm: 'Blue Guardian',
+    accountSize: 10000,
+    initialBalance: 10000,
+    currentBalance: 10000,
+    targetBalance: 10600,       // phase profit target
+    maxDrawdown: 800,           // max allowed drawdown ($)
+    phase: 'PHASE 1',
+    totalPhases: 3,
+    startDate: '2026-06-29',
+    accountNumber: '240968',
+    dashboardUrl: 'https://trader.blueguardian.com/metrics/6a3e93308c6d38bf79d67a4a',
+    status: 'active',           // active | passed | failed | funded
+    style: 'blue',
+    note: 'dr.namanrajsingh@gmail.com NYSE Account',
+  },
+  {
     id: 'BG-5K-001',
     accountName: 'Blue Guardian $5K',
     propFirm: 'Blue Guardian',
