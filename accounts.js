@@ -103,10 +103,10 @@ const ACCOUNTS = [
     propFirm: 'Blue Guardian',
     accountSize: 10000,
     initialBalance: 10000,
-    currentBalance: 10682.62,
+    currentBalance: 10000,
     targetBalance: 10600,       // phase profit target
     maxDrawdown: 800,           // max allowed drawdown ($)
-    phase: 'PHASE 2',
+    phase: 'PHASE 3',
     totalPhases: 3,
     startDate: '2026-06-26',
     accountNumber: '240207',
@@ -115,31 +115,14 @@ const ACCOUNTS = [
     style: 'blue',
     note: 'namanrajsingh2006@gmail.com NYSE Account',
   },
-  {
-    id: 'BG-10K-002',
-    accountName: 'Blue Guardian $10K',
-    propFirm: 'Blue Guardian',
-    accountSize: 10000,
-    initialBalance: 10000,
-    currentBalance: 10000,
-    targetBalance: 10600,       // phase profit target
-    maxDrawdown: 800,           // max allowed drawdown ($)
-    phase: 'PHASE 1',
-    totalPhases: 3,
-    startDate: '2026-06-29',
-    accountNumber: '240968',
-    dashboardUrl: 'https://trader.blueguardian.com/metrics/6a42b096d018e3d1cffb06e7',
-    status: 'active',           // active | passed | failed | funded
-    style: 'blue',
-    note: 'dr.namanrajsingh@gmail.com NYSE Account',
-  },
+
   {
     id: 'BG-5K-001',
     accountName: 'Blue Guardian $5K',
     propFirm: 'Blue Guardian',
     accountSize: 5000,
     initialBalance: 5000,
-    currentBalance: 5172.02,
+    currentBalance: 4921.52,
     targetBalance: 5300,        // phase profit target
     maxDrawdown: 400,           // max allowed drawdown ($)
     phase: 'PHASE 1',
@@ -157,7 +140,7 @@ const ACCOUNTS = [
     propFirm: 'Blue Guardian',
     accountSize: 5000,
     initialBalance: 5000,
-    currentBalance: 5310.63,
+    currentBalance: 5196.38,
     targetBalance: 5300,        // phase profit target
     maxDrawdown: 400,           // max allowed drawdown ($)
     phase: 'PHASE 1',
@@ -175,7 +158,7 @@ const ACCOUNTS = [
     propFirm: 'Blue Guardian',
     accountSize: 5000,
     initialBalance: 5000,
-    currentBalance: 5000,
+    currentBalance: 5106.99,
     targetBalance: 5300,        // phase profit target
     maxDrawdown: 400,           // max allowed drawdown ($)
     phase: 'PHASE 1',
@@ -183,28 +166,28 @@ const ACCOUNTS = [
     startDate: '2026-06-24',
     accountNumber: '238934',
     dashboardUrl: 'https://trader.blueguardian.com/metrics/6a3af5e23dbd89e9dfb84282',
-    status: 'reserve',           // active | passed | failed | funded
+    status: 'active',           // active | passed | failed | funded
     style: 'blue',
     note: 'dr.namanrajsingh@gmail.com',
-  },
-  {
-    id: 'GFT-5K-001',
-    accountName: 'GFT $5K',
-    propFirm: 'GFT',
-    accountSize: 5000,
-    initialBalance: 5000,
-    currentBalance: 4783.08,
-    targetBalance: 5400,
-    maxDrawdown: 400,
-    phase: 'PHASE 1',
-    totalPhases: 2,
-    startDate: '2026-06-20',
-    accountNumber: 'D#2266823',
-    dashboardUrl: 'https://app.goatfundedtrader.com/account/2028417?idx=1',
-    status: 'active',
-    style: 'gold',
-    note: 'trade.namanrajsingh@gmail.com OrderFlow Account',
   }
+  // {
+  //   id: 'GFT-5K-001',
+  //   accountName: 'GFT $5K',
+  //   propFirm: 'GFT',
+  //   accountSize: 5000,
+  //   initialBalance: 5000,
+  //   currentBalance: 4783.08,
+  //   targetBalance: 5400,
+  //   maxDrawdown: 400,
+  //   phase: 'PHASE 1',
+  //   totalPhases: 2,
+  //   startDate: '2026-06-20',
+  //   accountNumber: 'D#2266823',
+  //   dashboardUrl: 'https://app.goatfundedtrader.com/account/2028417?idx=1',
+  //   status: 'active',
+  //   style: 'gold',
+  //   note: 'trade.namanrajsingh@gmail.com OrderFlow Account',
+  // }
 ];
 
 // ─────────────────────────────────────────
