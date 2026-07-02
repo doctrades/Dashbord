@@ -103,7 +103,7 @@ const ACCOUNTS = [
     propFirm: 'Blue Guardian',
     accountSize: 10000,
     initialBalance: 10000,
-    currentBalance: 10000,
+    currentBalance: 10465.48,
     targetBalance: 10600,       // phase profit target
     maxDrawdown: 800,           // max allowed drawdown ($)
     phase: 'PHASE 3',
@@ -134,31 +134,14 @@ const ACCOUNTS = [
     style: 'blue',
     note: 'namanrajsingh2006@gmail.com OrderFlow Account',
   },
-  {
-    id: 'BG-5K-002',
-    accountName: 'Blue Guardian $5K',
-    propFirm: 'Blue Guardian',
-    accountSize: 5000,
-    initialBalance: 5000,
-    currentBalance: 5102.86,
-    targetBalance: 5300,        // phase profit target
-    maxDrawdown: 400,           // max allowed drawdown ($)
-    phase: 'PHASE 1',
-    totalPhases: 3,
-    startDate: '2026-06-24',
-    accountNumber: '238926',
-    dashboardUrl: 'https://trader.blueguardian.com/metrics/6a3aea8f84372ffceb979446',
-    status: 'active',           // active | passed | failed | funded
-    style: 'blue',
-    note: 'trade.namanrajsingh@gmail.com ',
-  },
+
   {
     id: 'BG-5K-003',
     accountName: 'Blue Guardian $5K',
     propFirm: 'Blue Guardian',
     accountSize: 5000,
     initialBalance: 5000,
-    currentBalance: 5106.99,
+    currentBalance: 5298.17,
     targetBalance: 5300,        // phase profit target
     maxDrawdown: 400,           // max allowed drawdown ($)
     phase: 'PHASE 1',
