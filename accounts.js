@@ -109,8 +109,8 @@ const ACCOUNTS = [
     phase: 'PHASE 3',
     totalPhases: 3,
     startDate: '2026-06-26',
-    accountNumber: '240207',
-    dashboardUrl: 'https://trader.blueguardian.com/metrics/6a3e93308c6d38bf79d67a4a',
+    accountNumber: '242919',
+    dashboardUrl: 'https://trader.blueguardian.com/metrics/6a44616ab671d2ca83eaeb96',
     status: 'active',           // active | passed | failed | funded
     style: 'blue',
     note: 'namanrajsingh2006@gmail.com NYSE Account',
